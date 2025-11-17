@@ -1,0 +1,159 @@
+/* Code block wrapper and enhancements */
+.code-block-wrapper {
+  margin: 16px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--code-bg);
+  border: 1px solid var(--border-color);
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .code-block-header,
+[data-theme="catppuccin-mocha"] .code-block-header,
+[data-theme="catppuccin-macchiato"] .code-block-header {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.code-block-language {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-transform: uppercase;
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+}
+
+.code-block-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.code-block-btn {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.6;
+  transition: all 0.2s var(--transition-timing);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.code-block-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .code-block-btn:hover,
+[data-theme="catppuccin-mocha"] .code-block-btn:hover,
+[data-theme="catppuccin-macchiato"] .code-block-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.code-block-btn.active {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .code-block-btn.active,
+[data-theme="catppuccin-mocha"] .code-block-btn.active,
+[data-theme="catppuccin-macchiato"] .code-block-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.code-block-btn.copied {
+  color: #22c55e;
+  opacity: 1;
+}
+
+.code-block-btn svg {
+  display: block;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  background: var(--code-bg);
+  border-radius: 0;
+}
+
+.code-block-wrapper code {
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Line numbers styling from Prism plugin */
+.code-block-wrapper pre.line-numbers {
+  padding-left: 3.8em;
+  position: relative;
+  counter-reset: linenumber;
+}
+
+.code-block-wrapper pre.line-numbers > code {
+  position: relative;
+  white-space: inherit;
+}
+
+.code-block-wrapper .line-numbers-rows {
+  position: absolute;
+  pointer-events: none;
+  top: 16px;
+  left: 0;
+  width: 3em;
+  letter-spacing: -1px;
+  user-select: none;
+  border-right: 1px solid var(--border-color);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.code-block-wrapper .line-numbers-rows > span {
+  display: block;
+  counter-increment: linenumber;
+  padding-right: 0.8em;
+  text-align: right;
+}
+
+.code-block-wrapper .line-numbers-rows > span:before {
+  content: counter(linenumber);
+  color: var(--blockquote-color);
+  opacity: 0.6;
+}
+
+/* Mermaid wrapper styling */
+.mermaid-wrapper {
+  margin: 24px 0;
+  padding: 20px;
+  background: var(--code-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: 8px;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mermaid-wrapper .mermaid {
+  max-width: 100%;
+}
+
+.mermaid-wrapper svg {
+  max-width: 100%;
+  height: auto;
+}

@@ -1,0 +1,103 @@
+.mermaid-wrapper {
+  margin: 24px 0;
+  padding: 20px;
+  background: var(--code-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.mermaid-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-error {
+  margin: 16px 0;
+  padding: 16px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  color: #c33;
+}
+
+.mermaid-error-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.mermaid-error-message {
+  background: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  overflow-x: auto;
+  margin: 8px 0;
+  color: #666;
+}
+
+.mermaid-error-details {
+  margin-top: 12px;
+}
+
+.mermaid-error-details summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+.mermaid-error-details summary:hover {
+  text-decoration: underline;
+}
+
+.mermaid-error-details pre {
+  margin-top: 8px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+  color: #333;
+}
+
+.mermaid-error-details code {
+  color: #333;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .mermaid-error,
+[data-theme="catppuccin-mocha"] .mermaid-error,
+[data-theme="catppuccin-macchiato"] .mermaid-error {
+  background: #3a1f1f;
+  border-color: #5a2f2f;
+  color: #ffaaaa;
+}
+
+[data-theme="dark"] .mermaid-error-message,
+[data-theme="catppuccin-mocha"] .mermaid-error-message,
+[data-theme="catppuccin-macchiato"] .mermaid-error-message {
+  background: var(--code-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .mermaid-error-details pre,
+[data-theme="catppuccin-mocha"] .mermaid-error-details pre,
+[data-theme="catppuccin-macchiato"] .mermaid-error-details pre {
+  background: var(--code-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .mermaid-error-details code,
+[data-theme="catppuccin-mocha"] .mermaid-error-details code,
+[data-theme="catppuccin-macchiato"] .mermaid-error-details code {
+  color: var(--text-color);
+}

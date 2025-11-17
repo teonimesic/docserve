@@ -1,0 +1,42 @@
+# Source files - we only publish the wrapper and postinstall script
+src/
+frontend/
+tests/
+target/
+test_folders/
+coverage/
+*.rs
+Cargo.toml
+Cargo.lock
+build.rs
+
+# Development files
+.git/
+.github/
+.vscode/
+node_modules/
+tmp/
+
+# Documentation (keep README.md and LICENSE)
+docs/
+*.md
+!README.md
+
+# Config files
+.gitignore
+.eslintrc*
+.prettierrc*
+tsconfig.json
+vite.config.ts
+playwright.config.ts
+vitest.config.ts
+
+# Test files
+*.test.*
+*.spec.*
+**/__tests__/
+**/e2e/
+
+# Temporary and generated files
+*.log
+.DS_Store

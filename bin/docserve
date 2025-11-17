@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+// This is a placeholder that will be replaced by the postinstall script
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+
+const platform = process.platform;
+const arch = process.arch;
+const ext = platform === 'win32' ? '.exe' : '';
+
+// Determine binary name
+let binaryName;
+if (platform === 'darwin' && arch === 'x64') {
+  binaryName = 'docserve-darwin-x64';
+} else if (platform === 'darwin' && arch === 'arm64') {
+  binaryName = 'docserve-darwin-arm64';
+} else if (platform === 'linux' && arch === 'x64') {
+  binaryName = 'docserve-linux-x64';
+} else if (platform === 'linux' && arch === 'arm64') {
+  binaryName = 'docserve-linux-arm64';
+} else if (platform === 'win32' && arch === 'x64') {
+  binaryName = 'docserve-windows-x64.exe';
+} else {
+  console.error(`Unsupported platform: ${platform}-${arch}`);
+  process.exit(1);
+}
+
+const binaryPath = path.join(__dirname, binaryName);
+
+if (!fs.existsSync(binaryPath)) {
+  console.error('docserve binary not found. Please run: npm install');
+  process.exit(1);
+}
+
+// Execute the binary with all arguments
+const proc = spawn(binaryPath, process.argv.slice(2), {
+  stdio: 'inherit',
+  shell: false
+});
+
+proc.on('exit', (code) => {
+  process.exit(code || 0);
+});

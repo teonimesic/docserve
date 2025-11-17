@@ -1,0 +1,152 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: docserve
+            asset_name: docserve-linux-x64
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            artifact_name: docserve
+            asset_name: docserve-linux-arm64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: docserve
+            asset_name: docserve-darwin-x64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact_name: docserve
+            asset_name: docserve-darwin-arm64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: docserve.exe
+            asset_name: docserve-windows-x64.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install cross-compilation tools (Linux ARM64)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Build binary
+        run: cargo build --release --target ${{ matrix.target }}
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+          SKIP_FRONTEND_BUILD: "1"
+
+      - name: Strip binary (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          if [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
+            aarch64-linux-gnu-strip target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+          else
+            strip target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create release archives
+        run: |
+          cd artifacts
+          for dir in */; do
+            name=${dir%/}
+            if [[ $name == *".exe" ]]; then
+              # Windows - create zip
+              cd "$dir"
+              zip "../${name}.zip" *
+              cd ..
+            else
+              # Unix - create tar.gz
+              cd "$dir"
+              chmod +x *
+              tar czf "../${name}.tar.gz" *
+              cd ..
+            fi
+          done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/*.tar.gz
+            artifacts/*.zip
+          body: |
+            ## Installation
+
+            ### Using npm (recommended)
+            ```bash
+            npm install -g docserve
+            ```
+
+            ### Manual Installation
+            Download the appropriate binary for your platform:
+            - **Linux x64**: docserve-linux-x64.tar.gz
+            - **Linux ARM64**: docserve-linux-arm64.tar.gz
+            - **macOS Intel**: docserve-darwin-x64.tar.gz
+            - **macOS Apple Silicon**: docserve-darwin-arm64.tar.gz
+            - **Windows x64**: docserve-windows-x64.exe.zip
+
+            Extract and add to your PATH.
+
+            ## Usage
+            ```bash
+            docserve docs/
+            ```
+
+            See [README](https://github.com/teonimesic/docserve#readme) for more details.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

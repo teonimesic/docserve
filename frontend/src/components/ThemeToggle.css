@@ -1,0 +1,21 @@
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--code-bg);
+  border: 1px solid var(--border-color-light);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-color);
+  transition: background 0.2s var(--transition-timing),
+              border-color var(--transition-speed) var(--transition-timing);
+  z-index: 100;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  background: var(--border-color-light);
+  outline: none;
+}

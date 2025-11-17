@@ -1,0 +1,104 @@
+.code-block-wrapper {
+  margin: 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--code-bg);
+  border: 1px solid var(--border-color-light);
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--border-color-light);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.code-block-language {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.code-block-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.code-block-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-color);
+  transition: background 0.2s var(--transition-timing);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+}
+
+.code-block-btn:hover {
+  background: var(--border-color);
+}
+
+.code-block-btn.copied {
+  color: #22c55e;
+  border-color: #22c55e;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  background: var(--code-bg);
+  border-radius: 0;
+}
+
+.code-block-wrapper code {
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Line numbers styling */
+.code-block-wrapper pre.line-numbers {
+  padding-left: 3.8em;
+  position: relative;
+}
+
+.code-block-wrapper pre.line-numbers > code {
+  position: relative;
+}
+
+.code-block-wrapper .line-numbers-rows {
+  position: absolute;
+  pointer-events: none;
+  top: 16px;
+  left: 0;
+  width: 3em;
+  letter-spacing: -1px;
+  user-select: none;
+  border-right: 1px solid var(--border-color);
+  padding-right: 8px;
+}
+
+.code-block-wrapper .line-numbers-rows > span {
+  display: block;
+  counter-increment: linenumber;
+}
+
+.code-block-wrapper .line-numbers-rows > span:before {
+  content: counter(linenumber);
+  color: var(--blockquote-color);
+  display: block;
+  padding-right: 0.8em;
+  text-align: right;
+}

@@ -1,0 +1,55 @@
+{
+  "name": "docserve-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "React SPA frontend for docserve - markdown documentation server",
+  "author": "Stefano Benatti <stefano@heavenstudio.com.br>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teonimesic/docserve.git"
+  },
+  "homepage": "https://github.com/teonimesic/docserve#readme",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:browser": "BROWSER_MODE=true vitest --browser",
+    "test:browser:ui": "BROWSER_MODE=true vitest --browser --ui",
+    "test:browser:headed": "BROWSER_MODE=true vitest --browser --browser.headless=false",
+    "test:e2e": "playwright test --reporter=list --max-failures=1",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "build:e2e": "npm run build && cd .. && cargo build --release && cd frontend && npm run test:e2e"
+  },
+  "dependencies": {
+    "marked": "^17.0.0",
+    "mermaid": "^11.12.1",
+    "prismjs": "^1.30.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/prismjs": "^1.26.5",
+    "@types/react": "^19.2.4",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/browser": "^4.0.9",
+    "@vitest/browser-playwright": "^4.0.9",
+    "@vitest/coverage-v8": "^4.0.9",
+    "@vitest/ui": "^4.0.9",
+    "jsdom": "^27.2.0",
+    "playwright": "^1.56.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1",
+    "vitest": "^4.0.9"
+  }
+}

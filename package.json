@@ -1,0 +1,48 @@
+{
+  "name": "docserve",
+  "version": "0.1.0",
+  "description": "Fast markdown documentation server with React SPA frontend, recursive folder support, and live reload",
+  "author": "Stefano Benatti <stefano@heavenstudio.com.br>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teonimesic/docserve.git"
+  },
+  "homepage": "https://github.com/teonimesic/docserve#readme",
+  "bugs": {
+    "url": "https://github.com/teonimesic/docserve/issues"
+  },
+  "keywords": [
+    "markdown",
+    "documentation",
+    "server",
+    "live-reload",
+    "preview",
+    "docs",
+    "mermaid",
+    "react",
+    "cli"
+  ],
+  "bin": {
+    "docserve": "./bin/docserve"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "files": [
+    "bin/",
+    "scripts/"
+  ]
+}

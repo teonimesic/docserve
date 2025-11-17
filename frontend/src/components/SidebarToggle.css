@@ -1,0 +1,31 @@
+.sidebar-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: w-resize;
+  font-size: 18px;
+  color: var(--text-color);
+  transition: left var(--transition-speed) var(--transition-timing),
+              background 0.2s var(--transition-timing);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 102;
+}
+
+.sidebar-toggle:hover,
+.sidebar-toggle:focus-visible {
+  background: var(--border-color-light);
+  outline: none;
+}
+
+.sidebar-toggle.collapsed {
+  left: 4px;
+  cursor: e-resize;
+}
