@@ -471,15 +471,18 @@ test('should handle relative links in nested markdown files', async ({ page }) =
   // Create a root level file
   writeFileSync(join(testDir, 'root-file.md'), '# Root File\n\nThis is at the root.')
 
+  await page.goto(SERVER_URL)
+  await page.waitForSelector('.file-list')
+
   // Create a subfolder with a file that links to the root file
+  // Wait 1+ second to ensure file modification timestamp is different from root-file.md
+  await new Promise((resolve) => setTimeout(resolve, 1100))
+
   mkdirSync(join(testDir, 'subfolder'))
   writeFileSync(
     join(testDir, 'subfolder', 'nested-file.md'),
     '# Nested File\n\n[Link to root file](../root-file.md)'
   )
-
-  await page.goto(SERVER_URL)
-  await page.waitForSelector('.file-list')
 
   // Wait for the subfolder to appear in the file list
   const folder = page.getByText('subfolder', { exact: true })
