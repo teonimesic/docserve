@@ -1,6 +1,6 @@
 use std::env;
-use std::process::Command;
 use std::path::Path;
+use std::process::Command;
 
 fn main() {
     // Skip frontend build if SKIP_FRONTEND_BUILD is set (for CI builds)

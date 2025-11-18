@@ -107,7 +107,6 @@ async fn test_file_modification_updates_via_websocket() {
     // Modify the file
     fs::write(&temp_file, "# Modified Content").expect("Failed to modify file");
 
-
     // Should receive reload signal via WebSocket (with timeout)
     let update_result = tokio::time::timeout(
         Duration::from_secs(WEBSOCKET_TIMEOUT_SECS),
@@ -167,12 +166,19 @@ async fn test_non_image_files_not_served_via_api() {
 
     // Test that non-image files return 404 via API static endpoint
     let response = server.get("/api/static/secret.txt").await;
-    assert_eq!(response.status_code(), 404, "Secret files should not be accessible via API");
+    assert_eq!(
+        response.status_code(),
+        404,
+        "Secret files should not be accessible via API"
+    );
 
     // Accessing non-API routes serves the SPA
     let response = server.get("/secret.txt").await;
     assert_eq!(response.status_code(), 200, "Non-API routes serve the SPA");
-    assert!(response.text().contains("<!doctype html>"), "Should serve SPA HTML, not file content");
+    assert!(
+        response.text().contains("<!doctype html>"),
+        "Should serve SPA HTML, not file content"
+    );
 }
 
 // Directory mode tests
@@ -214,7 +220,6 @@ async fn test_directory_mode_websocket_file_modification() {
     fs::write(&test_file, "# Modified Test 1\n\nContent has changed")
         .expect("Failed to modify file");
 
-
     // Should receive reload signal via WebSocket
     let update_result = tokio::time::timeout(
         Duration::from_secs(WEBSOCKET_TIMEOUT_SECS),
@@ -248,7 +253,7 @@ async fn test_folder_based_routing_404_for_nonexistent_path() {
 
     let base_dir = temp_dir.path().to_path_buf();
     let tracked_files = scan_markdown_files(&base_dir).expect("Failed to scan");
-    
+
     let router = new_router(base_dir, tracked_files, true).expect("Failed to create router");
     let server = TestServer::new(router).expect("Failed to create test server");
 
@@ -262,7 +267,10 @@ async fn test_folder_based_routing_404_for_nonexistent_path() {
     // Same for non-existent files in existing folders
     let response = server.get("/folder1/nonexistent.md").await;
     assert_eq!(response.status_code(), 200, "Non-API routes serve the SPA");
-    assert!(response.text().contains("<!doctype html>"), "Should serve SPA HTML");
+    assert!(
+        response.text().contains("<!doctype html>"),
+        "Should serve SPA HTML"
+    );
 }
 
 // ===========================
@@ -328,12 +336,19 @@ async fn test_api_get_files_nested_folders() {
     assert_eq!(files.len(), 3);
 
     // Check file paths
-    let paths: Vec<String> = files.iter()
+    let paths: Vec<String> = files
+        .iter()
         .map(|f| f["path"].as_str().unwrap().to_string())
         .collect();
 
-    assert!(paths.contains(&"folder1/file1.md".to_string()) || paths.contains(&"folder1\\file1.md".to_string()));
-    assert!(paths.contains(&"folder2/file2.md".to_string()) || paths.contains(&"folder2\\file2.md".to_string()));
+    assert!(
+        paths.contains(&"folder1/file1.md".to_string())
+            || paths.contains(&"folder1\\file1.md".to_string())
+    );
+    assert!(
+        paths.contains(&"folder2/file2.md".to_string())
+            || paths.contains(&"folder2\\file2.md".to_string())
+    );
     assert!(paths.contains(&"root.md".to_string()));
 }
 
@@ -402,7 +417,8 @@ async fn test_api_update_file_success() {
         "markdown": "# Updated Content\n\nThis is new content"
     });
 
-    let response = server.put("/api/files/test1.md")
+    let response = server
+        .put("/api/files/test1.md")
         .json(&update_payload)
         .await;
 
@@ -412,8 +428,8 @@ async fn test_api_update_file_success() {
     assert_eq!(json["success"], true);
 
     // Verify file was actually updated on disk
-    let file_content = fs::read_to_string(temp_dir.path().join("test1.md"))
-        .expect("Failed to read updated file");
+    let file_content =
+        fs::read_to_string(temp_dir.path().join("test1.md")).expect("Failed to read updated file");
     assert_eq!(file_content, "# Updated Content\n\nThis is new content");
 }
 
@@ -426,7 +442,8 @@ async fn test_api_update_file_checkbox() {
 
     let base_dir = temp_dir.path().to_path_buf();
     let tracked_files = scan_markdown_files(&base_dir).expect("Failed to scan");
-    let router = new_router(base_dir.clone(), tracked_files, true).expect("Failed to create router");
+    let router =
+        new_router(base_dir.clone(), tracked_files, true).expect("Failed to create router");
     let server = TestServer::new(router).expect("Failed to create server");
 
     // Update first checkbox to checked
@@ -435,15 +452,13 @@ async fn test_api_update_file_checkbox() {
         "markdown": updated_content
     });
 
-    let response = server.put("/api/files/todo.md")
-        .json(&update_payload)
-        .await;
+    let response = server.put("/api/files/todo.md").json(&update_payload).await;
 
     assert_eq!(response.status_code(), 200);
 
     // Verify file was updated
-    let file_content = fs::read_to_string(temp_dir.path().join("todo.md"))
-        .expect("Failed to read updated file");
+    let file_content =
+        fs::read_to_string(temp_dir.path().join("todo.md")).expect("Failed to read updated file");
     assert_eq!(file_content, updated_content);
 }
 
@@ -458,7 +473,8 @@ async fn test_api_update_file_triggers_websocket_reload() {
         "markdown": "# Updated via API"
     });
 
-    let response = server.put("/api/files/test1.md")
+    let response = server
+        .put("/api/files/test1.md")
         .json(&update_payload)
         .await;
 
@@ -481,8 +497,8 @@ async fn test_api_update_file_triggers_websocket_reload() {
     }
 
     // Verify file was actually updated
-    let file_content = fs::read_to_string(temp_dir.path().join("test1.md"))
-        .expect("Failed to read updated file");
+    let file_content =
+        fs::read_to_string(temp_dir.path().join("test1.md")).expect("Failed to read updated file");
     assert_eq!(file_content, "# Updated via API");
 }
 
@@ -494,7 +510,8 @@ async fn test_api_update_file_not_found() {
         "markdown": "# New Content"
     });
 
-    let response = server.put("/api/files/nonexistent.md")
+    let response = server
+        .put("/api/files/nonexistent.md")
         .json(&update_payload)
         .await;
 
@@ -514,9 +531,18 @@ async fn test_frontend_served_from_embedded_assets() {
 
     let html = response.text();
     // Verify it's HTML and not an error message
-    assert!(html.contains("<!doctype html>"), "Should serve HTML, not an error");
-    assert!(html.contains("<div id=\"root\"></div>"), "Should contain React root element");
-    assert!(!html.contains("Frontend not built"), "Should not show 'Frontend not built' error");
+    assert!(
+        html.contains("<!doctype html>"),
+        "Should serve HTML, not an error"
+    );
+    assert!(
+        html.contains("<div id=\"root\"></div>"),
+        "Should contain React root element"
+    );
+    assert!(
+        !html.contains("Frontend not built"),
+        "Should not show 'Frontend not built' error"
+    );
 
     // Verify the HTML references CSS and JS assets
     assert!(html.contains(".css"), "Should reference CSS files");
@@ -540,8 +566,16 @@ async fn test_frontend_assets_accessible() {
 
     // Test that CSS asset is accessible
     let css_response = server.get(css_path).await;
-    assert_eq!(css_response.status_code(), 200, "CSS asset should be accessible");
-    assert_eq!(css_response.header("content-type"), "text/css", "CSS should have correct MIME type");
+    assert_eq!(
+        css_response.status_code(),
+        200,
+        "CSS asset should be accessible"
+    );
+    assert_eq!(
+        css_response.header("content-type"),
+        "text/css",
+        "CSS should have correct MIME type"
+    );
 
     // Extract a JS file path from the HTML
     // Looking for something like: src="/assets/index-DUnTVOz5.js"
@@ -552,8 +586,16 @@ async fn test_frontend_assets_accessible() {
 
     // Test that JS asset is accessible
     let js_response = server.get(js_path).await;
-    assert_eq!(js_response.status_code(), 200, "JS asset should be accessible");
-    assert_eq!(js_response.header("content-type"), "text/javascript", "JS should have correct MIME type");
+    assert_eq!(
+        js_response.status_code(),
+        200,
+        "JS asset should be accessible"
+    );
+    assert_eq!(
+        js_response.header("content-type"),
+        "text/javascript",
+        "JS should have correct MIME type"
+    );
 }
 
 #[tokio::test]
@@ -566,8 +608,14 @@ async fn test_frontend_spa_routing() {
 
     let html = response.text();
     // Should serve the same index.html for SPA client-side routing
-    assert!(html.contains("<!doctype html>"), "Unknown routes should serve HTML for SPA routing");
-    assert!(html.contains("<div id=\"root\"></div>"), "Should contain React root element");
+    assert!(
+        html.contains("<!doctype html>"),
+        "Unknown routes should serve HTML for SPA routing"
+    );
+    assert!(
+        html.contains("<div id=\"root\"></div>"),
+        "Should contain React root element"
+    );
 }
 
 // ============================================================================
@@ -636,7 +684,11 @@ async fn test_api_static_path_traversal_blocked() {
 
     // Try to access file outside base directory via symlink
     let response = server.get("/api/static/link_to_secret.png").await;
-    assert_eq!(response.status_code(), 403, "Symlink to file outside base dir should be blocked with 403 Forbidden");
+    assert_eq!(
+        response.status_code(),
+        403,
+        "Symlink to file outside base dir should be blocked with 403 Forbidden"
+    );
     assert_eq!(response.text(), "Access denied");
 
     // Cleanup
@@ -777,7 +829,8 @@ async fn test_image_file_modification_triggers_reload() {
     tokio::time::sleep(Duration::from_millis(300)).await;
 
     // Modify the image file
-    fs::write(&image_path, vec![0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A]).expect("Failed to modify image");
+    fs::write(&image_path, vec![0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A])
+        .expect("Failed to modify image");
 
     // Should receive Reload message via WebSocket
     let update_result = tokio::time::timeout(
@@ -788,7 +841,11 @@ async fn test_image_file_modification_triggers_reload() {
 
     match update_result {
         Ok(message) => {
-            assert_eq!(message, ServerMessage::Reload, "Expected Reload message after image modification");
+            assert_eq!(
+                message,
+                ServerMessage::Reload,
+                "Expected Reload message after image modification"
+            );
         }
         Err(_) => {
             panic!("Timeout waiting for reload after image modification");
@@ -816,14 +873,12 @@ async fn test_new_markdown_file_triggers_file_added() {
     .await;
 
     match update_result {
-        Ok(message) => {
-            match message {
-                ServerMessage::FileAdded { name } => {
-                    assert_eq!(name, "new-file.md", "Expected new-file.md to be added");
-                }
-                _ => panic!("Expected FileAdded message, got {:?}", message),
+        Ok(message) => match message {
+            ServerMessage::FileAdded { name } => {
+                assert_eq!(name, "new-file.md", "Expected new-file.md to be added");
             }
-        }
+            _ => panic!("Expected FileAdded message, got {:?}", message),
+        },
         Err(_) => {
             panic!("Timeout waiting for FileAdded after creating new markdown file");
         }
@@ -850,14 +905,12 @@ async fn test_markdown_file_removal_triggers_file_removed() {
     .await;
 
     match update_result {
-        Ok(message) => {
-            match message {
-                ServerMessage::FileRemoved { name } => {
-                    assert_eq!(name, "test1.md", "Expected test1.md to be removed");
-                }
-                _ => panic!("Expected FileRemoved message, got {:?}", message),
+        Ok(message) => match message {
+            ServerMessage::FileRemoved { name } => {
+                assert_eq!(name, "test1.md", "Expected test1.md to be removed");
             }
-        }
+            _ => panic!("Expected FileRemoved message, got {:?}", message),
+        },
         Err(_) => {
             panic!("Timeout waiting for FileRemoved after deleting markdown file");
         }
@@ -885,15 +938,16 @@ async fn test_file_rename_triggers_file_renamed() {
     .await;
 
     match update_result {
-        Ok(message) => {
-            match message {
-                ServerMessage::FileRenamed { old_name, new_name } => {
-                    assert_eq!(old_name, "test1.md", "Expected old name to be test1.md");
-                    assert_eq!(new_name, "renamed-test.md", "Expected new name to be renamed-test.md");
-                }
-                _ => panic!("Expected FileRenamed message, got {:?}", message),
+        Ok(message) => match message {
+            ServerMessage::FileRenamed { old_name, new_name } => {
+                assert_eq!(old_name, "test1.md", "Expected old name to be test1.md");
+                assert_eq!(
+                    new_name, "renamed-test.md",
+                    "Expected new name to be renamed-test.md"
+                );
             }
-        }
+            _ => panic!("Expected FileRenamed message, got {:?}", message),
+        },
         Err(_) => {
             panic!("Timeout waiting for FileRenamed after renaming file");
         }
