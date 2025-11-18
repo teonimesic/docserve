@@ -430,16 +430,11 @@ test('should track renamed file after edit and rename', async ({ page }) => {
   await page.waitForSelector('h1')
 
   // Step 1: Edit the file and wait for the reload to complete
-  const reloadPromise = page.waitForResponse(
-    (response) => response.url().includes('/api/files/edit-test.md') && response.status() === 200,
-    { timeout: 10000 }
-  )
   writeFileSync(join(testDir, 'edit-test.md'), '# Edited Content\n\nThis has been edited.')
-  await reloadPromise
 
   // Wait for the DOM to update with the new content
   const heading = page.locator('h1')
-  await expect(heading).toHaveText('Edited Content')
+  await expect(heading).toHaveText('Edited Content', { timeout: 10000 })
 
   // Step 2: Rename the file
   const oldPath = join(testDir, 'edit-test.md')
@@ -474,11 +469,9 @@ test('should handle relative links in nested markdown files', async ({ page }) =
   await page.goto(SERVER_URL)
   await page.waitForSelector('.file-list')
 
-  // Wait for files to appear
-  await page.waitForTimeout(2000)
-
-  // Navigate to the subfolder
+  // Wait for the subfolder to appear in the file list
   const folder = page.getByText('subfolder', { exact: true })
+  await folder.waitFor({ timeout: 10000 })
   await folder.click()
 
   // Click on the nested file
