@@ -118,10 +118,45 @@ jobs:
         path: artifacts
         merge-multiple: true
 
+    - name: Package binaries for npm
+      run: |
+        cd artifacts
+
+        # Map Rust targets to npm binary names and create archives
+        # macOS Intel
+        if [ -f mdocserve-x86_64-apple-darwin ]; then
+          cp mdocserve-x86_64-apple-darwin mdocserve-darwin-x64
+          tar -czf mdocserve-darwin-x64.tar.gz mdocserve-darwin-x64
+          rm mdocserve-darwin-x64
+        fi
+
+        # macOS ARM
+        if [ -f mdocserve-aarch64-apple-darwin ]; then
+          cp mdocserve-aarch64-apple-darwin mdocserve-darwin-arm64
+          tar -czf mdocserve-darwin-arm64.tar.gz mdocserve-darwin-arm64
+          rm mdocserve-darwin-arm64
+        fi
+
+        # Linux x64 (gnu)
+        if [ -f mdocserve-x86_64-unknown-linux-gnu ]; then
+          cp mdocserve-x86_64-unknown-linux-gnu mdocserve-linux-x64
+          tar -czf mdocserve-linux-x64.tar.gz mdocserve-linux-x64
+          rm mdocserve-linux-x64
+        fi
+
+        # Linux ARM64 (gnu)
+        if [ -f mdocserve-aarch64-unknown-linux-gnu ]; then
+          cp mdocserve-aarch64-unknown-linux-gnu mdocserve-linux-arm64
+          tar -czf mdocserve-linux-arm64.tar.gz mdocserve-linux-arm64
+          rm mdocserve-linux-arm64
+        fi
+
+        ls -la
+
     - name: Create Release and Upload Artifacts
       uses: ncipollo/release-action@v1
       with:
-        artifacts: artifacts/mdocserve-*
+        artifacts: artifacts/*.tar.gz
         draft: true
         allowUpdates: true
         updateOnlyUnreleased: true
