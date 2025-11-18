@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, rmSync, renameSync, unlinkSync, mkdirSync }
 import { tmpdir } from 'os'
 import { join } from 'path'
 
-// E2E tests for core docserve functionality
+// E2E tests for core mdocserve functionality
 let serverProcess: ChildProcess | null = null
 let testDir: string
 const SERVER_PORT = 3456
@@ -12,7 +12,7 @@ const SERVER_URL = `http://127.0.0.1:${SERVER_PORT}`
 
 test.beforeAll(async () => {
   // Create temp directory for test files
-  testDir = mkdtempSync(join(tmpdir(), 'docserve-e2e-'))
+  testDir = mkdtempSync(join(tmpdir(), 'mdocserve-e2e-'))
 
   // Create test markdown files
   writeFileSync(join(testDir, 'test.md'), '# Test Document\n\nThis is a test document.')
@@ -34,9 +34,9 @@ test.beforeAll(async () => {
   ])
   writeFileSync(testImagePath, pngData)
 
-  // Start the docserve server
-  const docservePath = join(process.cwd(), '../target/release/docserve')
-  serverProcess = spawn(docservePath, [testDir, '--port', SERVER_PORT.toString()], {
+  // Start the mdocserve server
+  const mdocservePath = join(process.cwd(), '../target/release/mdocserve')
+  serverProcess = spawn(mdocservePath, [testDir, '--port', SERVER_PORT.toString()], {
     stdio: 'pipe',
     cwd: join(process.cwd(), '..'), // Run from project root so frontend/dist is found
   })
