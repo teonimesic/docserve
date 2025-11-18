@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { marked } from 'marked'
+import { marked } from './config/marked'
 import { useTheme } from './hooks/useTheme'
 import { useFolderState } from './hooks/useFolderState'
 import { useSidebarResize } from './hooks/useSidebarResize'
@@ -13,12 +13,6 @@ import { MarkdownContent } from './components/MarkdownContent'
 import { buildFileTree, type ApiFile } from './utils/fileTree'
 import './App.css'
 import './CodeBlockEnhancements.css'
-
-// Configure marked for GitHub Flavored Markdown
-marked.setOptions({
-  gfm: true,
-  breaks: false,
-})
 
 // Helper function to wrap tables in div for horizontal scrolling
 function wrapTablesForScroll(html: string): string {
