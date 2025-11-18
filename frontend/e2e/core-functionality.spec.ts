@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, rmSync, renameSync, unlinkSync, mkdirSync }
 import { tmpdir } from 'os'
 import { join } from 'path'
 
-// E2E tests for core docserve functionality
+// E2E tests for core mdocserve functionality
 let serverProcess: ChildProcess | null = null
 let testDir: string
 const SERVER_PORT = 3456
@@ -12,7 +12,7 @@ const SERVER_URL = `http://127.0.0.1:${SERVER_PORT}`
 
 test.beforeAll(async () => {
   // Create temp directory for test files
-  testDir = mkdtempSync(join(tmpdir(), 'docserve-e2e-'))
+  testDir = mkdtempSync(join(tmpdir(), 'mdocserve-e2e-'))
 
   // Create test markdown files
   writeFileSync(join(testDir, 'test.md'), '# Test Document\n\nThis is a test document.')
@@ -34,9 +34,9 @@ test.beforeAll(async () => {
   ])
   writeFileSync(testImagePath, pngData)
 
-  // Start the docserve server
-  const docservePath = join(process.cwd(), '../target/release/docserve')
-  serverProcess = spawn(docservePath, [testDir, '--port', SERVER_PORT.toString()], {
+  // Start the mdocserve server
+  const mdocservePath = join(process.cwd(), '../target/release/mdocserve')
+  serverProcess = spawn(mdocservePath, [testDir, '--port', SERVER_PORT.toString()], {
     stdio: 'pipe',
     cwd: join(process.cwd(), '..'), // Run from project root so frontend/dist is found
   })
@@ -430,16 +430,23 @@ test('should track renamed file after edit and rename', async ({ page }) => {
   await page.waitForSelector('h1')
 
   // Step 1: Edit the file and wait for the reload to complete
+  // Wait 1+ second to ensure file modification timestamp changes
+  await new Promise((resolve) => setTimeout(resolve, 1100))
+
+  // Set up a promise to wait for the WebSocket message and reload
   const reloadPromise = page.waitForResponse(
-    (response) => response.url().includes('/api/files/edit-test.md') && response.status() === 200,
+    (response) => response.url().includes('/api/files/edit-test.md'),
     { timeout: 10000 }
   )
+
   writeFileSync(join(testDir, 'edit-test.md'), '# Edited Content\n\nThis has been edited.')
+
+  // Wait for the API to return the updated content
   await reloadPromise
 
   // Wait for the DOM to update with the new content
   const heading = page.locator('h1')
-  await expect(heading).toHaveText('Edited Content')
+  await expect(heading).toHaveText('Edited Content', { timeout: 5000 })
 
   // Step 2: Rename the file
   const oldPath = join(testDir, 'edit-test.md')
@@ -464,21 +471,27 @@ test('should handle relative links in nested markdown files', async ({ page }) =
   // Create a root level file
   writeFileSync(join(testDir, 'root-file.md'), '# Root File\n\nThis is at the root.')
 
-  // Create a subfolder with a file that links to the root file
+  await page.goto(SERVER_URL)
+  await page.waitForSelector('.file-list')
+
+  // Create a subfolder first, give file watcher time to register it
   mkdirSync(join(testDir, 'subfolder'))
+
+  // Wait a bit for the file watcher to register the new directory
+  await page.waitForTimeout(500)
+
+  // Now create the file inside the subfolder
   writeFileSync(
     join(testDir, 'subfolder', 'nested-file.md'),
     '# Nested File\n\n[Link to root file](../root-file.md)'
   )
 
-  await page.goto(SERVER_URL)
-  await page.waitForSelector('.file-list')
-
-  // Wait for files to appear
+  // Wait for file watcher to detect the new file
   await page.waitForTimeout(2000)
 
-  // Navigate to the subfolder
+  // Click on the subfolder to expand it
   const folder = page.getByText('subfolder', { exact: true })
+  await expect(folder).toBeVisible()
   await folder.click()
 
   // Click on the nested file

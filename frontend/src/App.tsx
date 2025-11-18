@@ -117,7 +117,7 @@ function App() {
 
   useEffect(() => {
     let ws: WebSocket | null = null
-    let reconnectTimeout: number | null = null
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null
 
     const connect = () => {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
@@ -131,6 +131,11 @@ function App() {
             // Reload current file with cache-busting for images
             if (currentPathRef.current) {
               loadFile(currentPathRef.current, true)
+            }
+          } else if (message.type === 'FileModified') {
+            // Handle file modification - reload the specific file
+            if (currentPathRef.current === message.name) {
+              loadFile(message.name, true)
             }
           } else if (message.type === 'FileAdded') {
             // Handle new file added - refresh file list to show new file

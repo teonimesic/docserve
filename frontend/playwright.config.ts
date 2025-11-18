@@ -6,7 +6,7 @@ export default defineConfig({
   testIgnore: /.*\.test\.(ts|tsx)/, // Explicitly ignore vitest test files
   fullyParallel: false, // Run tests serially since they modify shared files
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: 0, // No retries - tests must pass on first try
   workers: 1, // Only one worker since tests share state
   reporter: 'list',
   timeout: 10000, // Reduce timeout to 10s for faster failures

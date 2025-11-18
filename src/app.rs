@@ -47,6 +47,7 @@ pub enum ServerMessage {
     Reload,
     Pong,
     FileAdded { name: String },
+    FileModified { name: String },
     FileRenamed { old_name: String, new_name: String },
     FileRemoved { name: String },
 }
@@ -161,7 +162,7 @@ impl MarkdownState {
         filenames
     }
 
-    fn refresh_file(&mut self, relative_path: &str) -> Result<()> {
+    fn refresh_file(&mut self, relative_path: &str) -> Result<bool> {
         if let Some(tracked) = self.tracked_files.get_mut(relative_path) {
             let metadata = fs::metadata(&tracked.path)?;
             let current_modified = metadata.modified()?;
@@ -170,10 +171,11 @@ impl MarkdownState {
                 let content = fs::read_to_string(&tracked.path)?;
                 tracked.markdown = content;
                 tracked.last_modified = current_modified;
+                return Ok(true); // File was refreshed
             }
         }
 
-        Ok(())
+        Ok(false) // File was not refreshed
     }
 
     fn update_file(&mut self, relative_path: &str, new_content: &str) -> Result<()> {
@@ -293,8 +295,12 @@ async fn handle_markdown_file_change(path: &Path, state: &SharedMarkdownState) {
     };
 
     if state_guard.tracked_files.contains_key(&relative_path) {
-        if state_guard.refresh_file(&relative_path).is_ok() {
-            let _ = state_guard.change_tx.send(ServerMessage::Reload);
+        if let Ok(was_refreshed) = state_guard.refresh_file(&relative_path) {
+            if was_refreshed {
+                let _ = state_guard.change_tx.send(ServerMessage::FileModified {
+                    name: relative_path,
+                });
+            }
         }
     } else if state_guard.is_directory_mode
         && state_guard.add_tracked_file(path.to_path_buf()).is_ok()
@@ -308,6 +314,7 @@ async fn handle_markdown_file_change(path: &Path, state: &SharedMarkdownState) {
 enum FileChangeType {
     Renamed { old_name: String, new_name: String },
     Removed { name: String },
+    Added { name: String },
     Other,
 }
 
@@ -336,6 +343,12 @@ fn detect_file_change(
         };
     }
 
+    if let Some(&first_added) = added.first() {
+        return FileChangeType::Added {
+            name: first_added.clone(),
+        };
+    }
+
     FileChangeType::Other
 }
 
@@ -345,6 +358,7 @@ fn send_change_message(change_type: FileChangeType, tx: &broadcast::Sender<Serve
             ServerMessage::FileRenamed { old_name, new_name }
         }
         FileChangeType::Removed { name } => ServerMessage::FileRemoved { name },
+        FileChangeType::Added { name } => ServerMessage::FileAdded { name },
         FileChangeType::Other => ServerMessage::Reload,
     };
 
@@ -1094,7 +1108,7 @@ mod tests {
     }
 
     #[test]
-    fn test_detect_file_change_other() {
+    fn test_detect_file_change_added() {
         use std::collections::{HashMap, HashSet};
 
         let mut old_files = HashSet::new();
@@ -1108,8 +1122,10 @@ mod tests {
         let new_tracked = HashMap::new();
 
         match detect_file_change(&old_files, &new_files, &old_tracked, &new_tracked) {
-            FileChangeType::Other => {}
-            _ => panic!("Expected Other"),
+            FileChangeType::Added { name } => {
+                assert_eq!(name, "file2.md");
+            }
+            _ => panic!("Expected Added"),
         }
     }
 
@@ -1150,6 +1166,25 @@ mod tests {
                 assert_eq!(name, "removed.md");
             }
             _ => panic!("Expected FileRemoved message"),
+        }
+    }
+
+    #[test]
+    fn test_send_change_message_added() {
+        let (tx, mut rx) = broadcast::channel(10);
+
+        send_change_message(
+            FileChangeType::Added {
+                name: "added.md".to_string(),
+            },
+            &tx,
+        );
+
+        match rx.try_recv() {
+            Ok(ServerMessage::FileAdded { name }) => {
+                assert_eq!(name, "added.md");
+            }
+            _ => panic!("Expected FileAdded message"),
         }
     }
 
