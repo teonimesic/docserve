@@ -117,7 +117,7 @@ function App() {
 
   useEffect(() => {
     let ws: WebSocket | null = null
-    let reconnectTimeout: number | null = null
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null
 
     const connect = () => {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
