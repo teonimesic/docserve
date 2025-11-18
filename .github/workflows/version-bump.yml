@@ -23,6 +23,8 @@ jobs:
     # Skip if the commit message contains version bump indicators (only for push events)
     if: "github.event_name == 'workflow_dispatch' || (!contains(github.event.head_commit.message, 'Bump version') && !contains(github.event.head_commit.message, '[skip ci]'))"
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,3 +87,9 @@ jobs:
           git tag "v${{ steps.bump.outputs.version }}"
           git push origin main
           git push origin "v${{ steps.bump.outputs.version }}"
+
+  trigger-build:
+    needs: version-bump
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: v${{ needs.version-bump.outputs.version }}
