@@ -12,7 +12,7 @@ echo ""
 if [ -d "frontend" ]; then
   echo "📦 Running frontend tests..."
   cd frontend
-  npm test -- --run
+  npm run test:ci
   cd ..
   echo "✅ Frontend tests passed"
   echo ""
