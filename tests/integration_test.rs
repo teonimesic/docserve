@@ -1,5 +1,5 @@
 use axum_test::TestServer;
-use docserve::{new_router, scan_markdown_files, ClientMessage, ServerMessage};
+use mdocserve::{new_router, scan_markdown_files, ClientMessage, ServerMessage};
 use std::fs;
 use std::time::Duration;
 use tempfile::{tempdir, Builder, NamedTempFile, TempDir};

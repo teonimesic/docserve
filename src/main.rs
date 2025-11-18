@@ -2,10 +2,10 @@ use anyhow::Result;
 use clap::Parser;
 use std::path::PathBuf;
 
-use docserve::{scan_markdown_files, serve_markdown};
+use mdocserve::{scan_markdown_files, serve_markdown};
 
 #[derive(Parser)]
-#[command(name = "docserve")]
+#[command(name = "mdocserve")]
 #[command(about = "Fast markdown documentation server with live reload")]
 #[command(version)]
 struct Args {
