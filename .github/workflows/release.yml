@@ -245,6 +245,7 @@ jobs:
   publish-npm:
     needs: [version-bump, release]
     runs-on: ubuntu-latest
+    environment: npm-publish
     permissions:
       contents: read
       id-token: write
@@ -257,8 +258,11 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         registry-url: 'https://registry.npmjs.org'
+
+    - name: Update npm
+      run: npm install -g npm@latest
 
     - name: Publish to npm
       run: npm publish --provenance --access public
