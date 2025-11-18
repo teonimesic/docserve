@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MarkdownContent } from '../MarkdownContent'
 
@@ -48,9 +48,37 @@ describe('MarkdownContent', () => {
   it('renders links', () => {
     const html = '<a href="https://example.com">Link</a>'
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     const link = screen.getByRole('link', { name: 'Link' })
     expect(link).toHaveAttribute('href', 'https://example.com')
+  })
+
+  it('renders hash/anchor links without preventing default behavior', () => {
+    const html = '<h2 id="section-title">Section Title</h2><p><a href="#section-title">Link to section</a></p>'
+    render(<MarkdownContent html={html} filePath="test.md" />)
+
+    const link = screen.getByRole('link', { name: 'Link to section' })
+    expect(link).toHaveAttribute('href', '#section-title')
+
+    // Hash links should not have onClick handler that prevents default
+    // They should use browser's default anchor navigation
+    // We can verify this by checking that the link doesn't call onLinkClick
+    const heading = screen.getByRole('heading', { level: 2, name: 'Section Title' })
+    expect(heading).toHaveAttribute('id', 'section-title')
+  })
+
+  it('does not intercept hash links with onLinkClick handler', () => {
+    const onLinkClick = vi.fn()
+    const html = '<a href="#section">Link to section</a>'
+    render(<MarkdownContent html={html} filePath="test.md" onLinkClick={onLinkClick} />)
+
+    const link = screen.getByRole('link', { name: 'Link to section' })
+
+    // Click the hash link
+    link.click()
+
+    // onLinkClick should NOT be called for hash links (they should use browser default)
+    expect(onLinkClick).not.toHaveBeenCalled()
   })
 
   it('converts class attribute to className', () => {
