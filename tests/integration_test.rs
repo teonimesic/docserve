@@ -1,8 +1,9 @@
 use axum_test::TestServer;
 use mdocserve::{new_router, scan_markdown_files, ClientMessage, ServerMessage};
 use std::fs;
+use std::path::PathBuf;
 use std::time::Duration;
-use tempfile::{tempdir, Builder, NamedTempFile, TempDir};
+use tempfile::{tempdir, TempDir};
 
 const WEBSOCKET_TIMEOUT_SECS: u64 = 5;
 
@@ -10,23 +11,22 @@ const TEST_FILE_1_CONTENT: &str = "# Test 1\n\nContent of test1";
 const TEST_FILE_2_CONTENT: &str = "# Test 2\n\nContent of test2";
 const TEST_FILE_3_CONTENT: &str = "# Test 3\n\nContent of test3";
 
-fn create_test_server_impl(content: &str, use_http: bool) -> (TestServer, NamedTempFile) {
-    let temp_file = Builder::new()
-        .suffix(".md")
-        .tempfile()
-        .expect("Failed to create temp file");
-    fs::write(&temp_file, content).expect("Failed to write temp file");
+// Holds test server and temp directory to keep files alive
+struct TestSetup {
+    server: TestServer,
+    _temp_dir: TempDir,
+    file_path: PathBuf,
+}
 
-    let canonical_path = temp_file
-        .path()
-        .canonicalize()
-        .unwrap_or_else(|_| temp_file.path().to_path_buf());
+fn create_test_server_impl(content: &str, use_http: bool) -> TestSetup {
+    // Create a dedicated temp directory to avoid permission issues with /tmp siblings in CI
+    let temp_dir = tempdir().expect("Failed to create temp dir");
+    let temp_file_path = temp_dir.path().join("test.md");
+    fs::write(&temp_file_path, content).expect("Failed to write temp file");
 
-    let base_dir = canonical_path
-        .parent()
-        .unwrap_or_else(|| std::path::Path::new("."))
-        .to_path_buf();
-    let tracked_files = vec![canonical_path];
+    // Use the temp directory as base_dir instead of /tmp
+    let base_dir = temp_dir.path().to_path_buf();
+    let tracked_files = vec![temp_file_path.clone()];
     let is_directory_mode = false;
 
     let router =
@@ -41,14 +41,18 @@ fn create_test_server_impl(content: &str, use_http: bool) -> (TestServer, NamedT
         TestServer::new(router).expect("Failed to create test server")
     };
 
-    (server, temp_file)
+    TestSetup {
+        server,
+        _temp_dir: temp_dir,
+        file_path: temp_file_path,
+    }
 }
 
-async fn create_test_server(content: &str) -> (TestServer, NamedTempFile) {
+async fn create_test_server(content: &str) -> TestSetup {
     create_test_server_impl(content, false)
 }
 
-async fn create_test_server_with_http(content: &str) -> (TestServer, NamedTempFile) {
+async fn create_test_server_with_http(content: &str) -> TestSetup {
     create_test_server_impl(content, true)
 }
 
@@ -91,21 +95,26 @@ async fn create_directory_server_with_http() -> (TestServer, TempDir) {
 
 #[tokio::test]
 async fn test_websocket_connection() {
-    let (server, _temp_file) = create_test_server_with_http("# WebSocket Test").await;
+    let setup = create_test_server_with_http("# WebSocket Test").await;
 
     // Test that WebSocket endpoint exists and can be connected to
-    let response = server.get_websocket("/ws").await;
+    let response = setup.server.get_websocket("/ws").await;
     response.assert_status_switching_protocols();
 }
 
 #[tokio::test]
 async fn test_file_modification_updates_via_websocket() {
-    let (server, temp_file) = create_test_server_with_http("# Original Content").await;
+    let setup = create_test_server_with_http("# Original Content").await;
 
-    let mut websocket = server.get_websocket("/ws").await.into_websocket().await;
+    let mut websocket = setup
+        .server
+        .get_websocket("/ws")
+        .await
+        .into_websocket()
+        .await;
 
     // Modify the file
-    fs::write(&temp_file, "# Modified Content").expect("Failed to modify file");
+    fs::write(&setup.file_path, "# Modified Content").expect("Failed to modify file");
 
     // Should receive reload signal via WebSocket (with timeout)
     let update_result = tokio::time::timeout(
@@ -130,10 +139,10 @@ async fn test_file_modification_updates_via_websocket() {
 
 #[tokio::test]
 async fn test_unknown_routes_serve_spa() {
-    let (server, _temp_file) = create_test_server("# SPA Test").await;
+    let setup = create_test_server("# SPA Test").await;
 
     // With embedded frontend, unknown routes serve the SPA for client-side routing
-    let response = server.get("/unknown-route").await;
+    let response = setup.server.get("/unknown-route").await;
     assert_eq!(response.status_code(), 200);
 
     let html = response.text();
@@ -197,9 +206,9 @@ async fn test_directory_mode_non_api_routes_serve_spa() {
 
 #[tokio::test]
 async fn test_single_file_mode_no_navigation_sidebar() {
-    let (server, _temp_file) = create_test_server("# Single File Test").await;
+    let setup = create_test_server("# Single File Test").await;
 
-    let response = server.get("/").await;
+    let response = setup.server.get("/").await;
     assert_eq!(response.status_code(), 200);
     let body = response.text();
 
@@ -750,8 +759,13 @@ async fn test_api_static_supports_multiple_image_formats() {
 
 #[tokio::test]
 async fn test_websocket_ping_message() {
-    let (server, _temp_file) = create_test_server_with_http("# Test").await;
-    let mut websocket = server.get_websocket("/ws").await.into_websocket().await;
+    let setup = create_test_server_with_http("# Test").await;
+    let mut websocket = setup
+        .server
+        .get_websocket("/ws")
+        .await
+        .into_websocket()
+        .await;
 
     // Send Ping message
     let ping_msg = serde_json::to_string(&ClientMessage::Ping).unwrap();
@@ -767,8 +781,13 @@ async fn test_websocket_ping_message() {
 
 #[tokio::test]
 async fn test_websocket_request_refresh_message() {
-    let (server, _temp_file) = create_test_server_with_http("# Test").await;
-    let mut websocket = server.get_websocket("/ws").await.into_websocket().await;
+    let setup = create_test_server_with_http("# Test").await;
+    let mut websocket = setup
+        .server
+        .get_websocket("/ws")
+        .await
+        .into_websocket()
+        .await;
 
     // Send RequestRefresh message
     let refresh_msg = serde_json::to_string(&ClientMessage::RequestRefresh).unwrap();
@@ -783,8 +802,13 @@ async fn test_websocket_request_refresh_message() {
 
 #[tokio::test]
 async fn test_websocket_close_message() {
-    let (server, _temp_file) = create_test_server_with_http("# Test").await;
-    let websocket = server.get_websocket("/ws").await.into_websocket().await;
+    let setup = create_test_server_with_http("# Test").await;
+    let websocket = setup
+        .server
+        .get_websocket("/ws")
+        .await
+        .into_websocket()
+        .await;
 
     // Send Close message
     websocket.close().await;
@@ -798,8 +822,13 @@ async fn test_websocket_close_message() {
 
 #[tokio::test]
 async fn test_websocket_invalid_json() {
-    let (server, _temp_file) = create_test_server_with_http("# Test").await;
-    let mut websocket = server.get_websocket("/ws").await.into_websocket().await;
+    let setup = create_test_server_with_http("# Test").await;
+    let mut websocket = setup
+        .server
+        .get_websocket("/ws")
+        .await
+        .into_websocket()
+        .await;
 
     // Send invalid JSON
     websocket.send_text("{invalid json}").await;
