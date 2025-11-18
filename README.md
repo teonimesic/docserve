@@ -2,7 +2,7 @@
 
 Fast markdown documentation server with **live reload**, **recursive folder support**, and **theme switching**.
 
-> **Note**: This project is based on [mdserve](https://github.com/some-natalie/mdserve) but has evolved significantly with a complete React frontend rewrite, recursive folder watching, and enhanced UI features.
+> **Note**: This project is based on [mdserve](https://github.com/jfernandez/mdserve) but has evolved significantly with a complete React frontend rewrite, recursive folder watching, and enhanced UI features.
 
 Just run `mdocserve docs/` and start writing. One statically-compiled executable with embedded React SPA - no installation, no dependencies.
 
@@ -193,7 +193,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Based on [mdserve](https://github.com/some-natalie/mdserve) by @some-natalie
+- Based on [mdserve](https://github.com/jfernandez/mdserve) by @jfernandez
 - Built with [Axum](https://github.com/tokio-rs/axum) web framework
 - React frontend with [Vite](https://vitejs.dev/) build tool
 - Markdown parsing by [marked.js](https://marked.js.org/)
