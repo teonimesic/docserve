@@ -84,9 +84,12 @@ jobs:
           # Update Cargo.toml
           sed -i "s/^version = \".*\"/version = \"$NEW_VERSION\"/" Cargo.toml
 
+          # Update Cargo.lock by running cargo update
+          cargo update --workspace
+
       - name: Commit and tag
         run: |
-          git add package.json Cargo.toml
+          git add package.json Cargo.toml Cargo.lock
           git commit -m "Bump version to ${{ steps.bump.outputs.version }} [skip ci]"
           git tag "v${{ steps.bump.outputs.version }}"
           git push origin main
