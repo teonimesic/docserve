@@ -73,13 +73,13 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
   // Map common language aliases to Prism language names
   const getPrismLanguage = (lang: string): string => {
     const langMap: Record<string, string> = {
-      'js': 'javascript',
-      'ts': 'typescript',
-      'py': 'python',
-      'rs': 'rust',
-      'sh': 'bash',
-      'html': 'markup',
-      'xml': 'markup',
+      js: 'javascript',
+      ts: 'typescript',
+      py: 'python',
+      rs: 'rust',
+      sh: 'bash',
+      html: 'markup',
+      xml: 'markup',
     }
     return langMap[lang] || lang
   }
@@ -98,13 +98,20 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
             aria-label="Toggle line numbers"
             title="Toggle line numbers"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="4" y1="3" x2="12" y2="3"/>
-              <line x1="4" y1="8" x2="12" y2="8"/>
-              <line x1="4" y1="13" x2="12" y2="13"/>
-              <circle cx="1.5" cy="3" r="0.5" fill="currentColor"/>
-              <circle cx="1.5" cy="8" r="0.5" fill="currentColor"/>
-              <circle cx="1.5" cy="13" r="0.5" fill="currentColor"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="4" y1="3" x2="12" y2="3" />
+              <line x1="4" y1="8" x2="12" y2="8" />
+              <line x1="4" y1="13" x2="12" y2="13" />
+              <circle cx="1.5" cy="3" r="0.5" fill="currentColor" />
+              <circle cx="1.5" cy="8" r="0.5" fill="currentColor" />
+              <circle cx="1.5" cy="13" r="0.5" fill="currentColor" />
             </svg>
           </button>
           <button
@@ -114,13 +121,27 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
             title={copied ? 'Copied!' : 'Copy code'}
           >
             {copied ? (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="3,8 6,11 13,4"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <polyline points="3,8 6,11 13,4" />
               </svg>
             ) : (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="4" y="4" width="8" height="10" rx="1"/>
-                <path d="M8 4V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-2"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="4" y="4" width="8" height="10" rx="1" />
+                <path d="M8 4V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-2" />
               </svg>
             )}
           </button>

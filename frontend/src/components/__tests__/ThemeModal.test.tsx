@@ -6,12 +6,7 @@ import type { Theme } from '../../hooks/useTheme'
 describe('ThemeModal', () => {
   it('renders nothing when not open', () => {
     const { container } = render(
-      <ThemeModal
-        isOpen={false}
-        currentTheme="dark"
-        onClose={vi.fn()}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={false} currentTheme="dark" onClose={vi.fn()} onSelectTheme={vi.fn()} />
     )
 
     expect(container.firstChild).toBeNull()
@@ -19,12 +14,7 @@ describe('ThemeModal', () => {
 
   it('renders modal when open', () => {
     const { getByText } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={vi.fn()}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={vi.fn()} onSelectTheme={vi.fn()} />
     )
 
     expect(getByText('Choose Theme')).toBeInTheDocument()
@@ -32,12 +22,7 @@ describe('ThemeModal', () => {
 
   it('renders all theme options', () => {
     const { getByText } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={vi.fn()}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={vi.fn()} onSelectTheme={vi.fn()} />
     )
 
     expect(getByText('Catppuccin Latte')).toBeInTheDocument()
@@ -86,12 +71,7 @@ describe('ThemeModal', () => {
     const mockClose = vi.fn()
 
     const { container } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={mockClose}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={mockClose} onSelectTheme={vi.fn()} />
     )
 
     const backdrop = container.querySelector('.theme-modal')!
@@ -104,12 +84,7 @@ describe('ThemeModal', () => {
     const mockClose = vi.fn()
 
     const { container } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={mockClose}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={mockClose} onSelectTheme={vi.fn()} />
     )
 
     const content = container.querySelector('.theme-modal-content')!
@@ -120,12 +95,7 @@ describe('ThemeModal', () => {
 
   it('renders theme icons', () => {
     const { getByText } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={vi.fn()}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={vi.fn()} onSelectTheme={vi.fn()} />
     )
 
     expect(getByText('☕')).toBeInTheDocument() // Latte
@@ -137,12 +107,7 @@ describe('ThemeModal', () => {
 
   it('renders theme descriptions', () => {
     const { getByText } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={vi.fn()}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={vi.fn()} onSelectTheme={vi.fn()} />
     )
 
     expect(getByText('Warm light theme')).toBeInTheDocument()
@@ -154,12 +119,7 @@ describe('ThemeModal', () => {
 
   it('renders color swatches for each theme', () => {
     const { container } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={vi.fn()}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={vi.fn()} onSelectTheme={vi.fn()} />
     )
 
     const colorSwatches = container.querySelectorAll('.theme-color-swatch')
@@ -169,12 +129,7 @@ describe('ThemeModal', () => {
 
   it('applies correct colors to theme swatches', () => {
     const { container } = render(
-      <ThemeModal
-        isOpen={true}
-        currentTheme="dark"
-        onClose={vi.fn()}
-        onSelectTheme={vi.fn()}
-      />
+      <ThemeModal isOpen={true} currentTheme="dark" onClose={vi.fn()} onSelectTheme={vi.fn()} />
     )
 
     // Check latte theme swatches

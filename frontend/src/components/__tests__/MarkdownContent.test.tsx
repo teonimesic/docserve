@@ -6,14 +6,14 @@ describe('MarkdownContent', () => {
   it('renders simple HTML content', () => {
     const html = '<p>Hello world</p>'
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     expect(screen.getByText('Hello world')).toBeInTheDocument()
   })
 
   it('renders code blocks with CodeBlock component', () => {
     const html = '<pre><code class="language-javascript">const x = 1;</code></pre>'
     const { container } = render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     // CodeBlock component should be rendered
     expect(container.querySelector('.code-block-wrapper')).toBeInTheDocument()
     expect(screen.getByText('javascript')).toBeInTheDocument()
@@ -22,13 +22,14 @@ describe('MarkdownContent', () => {
   it('renders mermaid diagrams with MermaidDiagram component', () => {
     const html = '<pre><code class="language-mermaid">graph TD; A-->B;</code></pre>'
     const { container } = render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     // MermaidDiagram component should be rendered
     expect(container.querySelector('.mermaid-wrapper')).toBeInTheDocument()
   })
 
   it('renders todo checkboxes with TodoCheckbox component', () => {
-    const html = '<ul><li><input type="checkbox" disabled="" /> Unchecked item</li><li><input type="checkbox" disabled="" checked="" /> Checked item</li></ul>'
+    const html =
+      '<ul><li><input type="checkbox" disabled="" /> Unchecked item</li><li><input type="checkbox" disabled="" checked="" /> Checked item</li></ul>'
     render(<MarkdownContent html={html} filePath="test.md" />)
 
     const checkboxes = screen.getAllByRole('checkbox')
@@ -40,7 +41,7 @@ describe('MarkdownContent', () => {
   it('renders headings', () => {
     const html = '<h1>Title</h1><h2>Subtitle</h2>'
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     expect(screen.getByRole('heading', { level: 1, name: 'Title' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Subtitle' })).toBeInTheDocument()
   })
@@ -54,7 +55,8 @@ describe('MarkdownContent', () => {
   })
 
   it('renders hash/anchor links without preventing default behavior', () => {
-    const html = '<h2 id="section-title">Section Title</h2><p><a href="#section-title">Link to section</a></p>'
+    const html =
+      '<h2 id="section-title">Section Title</h2><p><a href="#section-title">Link to section</a></p>'
     render(<MarkdownContent html={html} filePath="test.md" />)
 
     const link = screen.getByRole('link', { name: 'Link to section' })
@@ -84,7 +86,7 @@ describe('MarkdownContent', () => {
   it('converts class attribute to className', () => {
     const html = '<div class="test-class">Content</div>'
     const { container } = render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     const div = container.querySelector('.test-class')
     expect(div).toBeInTheDocument()
     expect(div?.textContent).toBe('Content')
@@ -102,7 +104,7 @@ describe('MarkdownContent', () => {
       </div>
     `
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     expect(screen.getByText('Paragraph 1')).toBeInTheDocument()
     expect(screen.getByText('Item 1')).toBeInTheDocument()
     expect(screen.getByText('Item 2')).toBeInTheDocument()
@@ -183,7 +185,11 @@ describe('MarkdownContent', () => {
       let renderCount = 0
 
       // Create a wrapper to track renders
-      const TestWrapper = ({ someUnrelatedProp }: { someUnrelatedProp: number }) => {
+      const TestWrapper = ({
+        someUnrelatedProp: _someUnrelatedProp,
+      }: {
+        someUnrelatedProp: number
+      }) => {
         renderCount++
         return <MarkdownContent html={html} filePath="test.md" />
       }
@@ -215,9 +221,7 @@ describe('MarkdownContent', () => {
     it('re-renders when filePath changes', () => {
       const html = '<ul><li><input type="checkbox" disabled="" /> Task</li></ul>'
 
-      const { container, rerender } = render(
-        <MarkdownContent html={html} filePath="file1.md" />
-      )
+      const { container, rerender } = render(<MarkdownContent html={html} filePath="file1.md" />)
 
       const checkbox1 = container.querySelector('input[type="checkbox"]')
       expect(checkbox1).toBeInTheDocument()

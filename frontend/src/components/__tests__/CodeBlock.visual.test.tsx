@@ -21,7 +21,9 @@ describe('CodeBlock Visual Tests', () => {
       document.documentElement.setAttribute('data-theme', 'light')
       render(<CodeBlock code={sampleCode} language="javascript" />)
 
-      await expect.element(page.getByRole('button', { name: 'Toggle line numbers' })).toBeInTheDocument()
+      await expect
+        .element(page.getByRole('button', { name: 'Toggle line numbers' }))
+        .toBeInTheDocument()
       await page.screenshot()
     })
 
@@ -29,7 +31,9 @@ describe('CodeBlock Visual Tests', () => {
       document.documentElement.setAttribute('data-theme', 'dark')
       render(<CodeBlock code={sampleCode} language="javascript" />)
 
-      await expect.element(page.getByRole('button', { name: 'Toggle line numbers' })).toBeInTheDocument()
+      await expect
+        .element(page.getByRole('button', { name: 'Toggle line numbers' }))
+        .toBeInTheDocument()
       await page.screenshot()
     })
 
@@ -37,7 +41,9 @@ describe('CodeBlock Visual Tests', () => {
       document.documentElement.setAttribute('data-theme', 'catppuccin-latte')
       render(<CodeBlock code={sampleCode} language="javascript" />)
 
-      await expect.element(page.getByRole('button', { name: 'Toggle line numbers' })).toBeInTheDocument()
+      await expect
+        .element(page.getByRole('button', { name: 'Toggle line numbers' }))
+        .toBeInTheDocument()
       await page.screenshot()
     })
 
@@ -45,7 +51,9 @@ describe('CodeBlock Visual Tests', () => {
       document.documentElement.setAttribute('data-theme', 'catppuccin-macchiato')
       render(<CodeBlock code={sampleCode} language="javascript" />)
 
-      await expect.element(page.getByRole('button', { name: 'Toggle line numbers' })).toBeInTheDocument()
+      await expect
+        .element(page.getByRole('button', { name: 'Toggle line numbers' }))
+        .toBeInTheDocument()
       await page.screenshot()
     })
 
@@ -53,7 +61,9 @@ describe('CodeBlock Visual Tests', () => {
       document.documentElement.setAttribute('data-theme', 'catppuccin-mocha')
       render(<CodeBlock code={sampleCode} language="javascript" />)
 
-      await expect.element(page.getByRole('button', { name: 'Toggle line numbers' })).toBeInTheDocument()
+      await expect
+        .element(page.getByRole('button', { name: 'Toggle line numbers' }))
+        .toBeInTheDocument()
       await page.screenshot()
     })
   })
@@ -69,13 +79,16 @@ describe('CodeBlock Visual Tests', () => {
       await toggleButton.click()
 
       // Wait for Prism to add the .line-numbers-rows element
-      await waitFor(() => {
-        const lineNumbersRows = container.querySelector('.line-numbers-rows')
-        expect(lineNumbersRows).toBeTruthy()
-        // Also verify it has child spans (actual line numbers)
-        const spans = lineNumbersRows?.querySelectorAll('span')
-        expect(spans && spans.length > 0).toBe(true)
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          const lineNumbersRows = container.querySelector('.line-numbers-rows')
+          expect(lineNumbersRows).toBeTruthy()
+          // Also verify it has child spans (actual line numbers)
+          const spans = lineNumbersRows?.querySelectorAll('span')
+          expect(spans && spans.length > 0).toBe(true)
+        },
+        { timeout: 2000 }
+      )
 
       // Take screenshot with line numbers enabled
       await page.screenshot()
@@ -93,10 +106,13 @@ describe('CodeBlock Visual Tests', () => {
       await toggleButton.click()
 
       // Wait for Prism to add the .line-numbers-rows element
-      await waitFor(() => {
-        const lineNumbersRows = container.querySelector('.line-numbers-rows')
-        expect(lineNumbersRows).toBeTruthy()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          const lineNumbersRows = container.querySelector('.line-numbers-rows')
+          expect(lineNumbersRows).toBeTruthy()
+        },
+        { timeout: 2000 }
+      )
 
       await page.screenshot()
     })

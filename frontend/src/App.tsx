@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { marked } from './config/marked'
 import { useTheme } from './hooks/useTheme'
 import { useFolderState } from './hooks/useFolderState'
@@ -28,16 +28,13 @@ function rewriteImagePaths(html: string, cacheBust = false): string {
   // And src="path/to/image.png" -> src="/api/static/path/to/image.png"
   // Add cache-busting parameter if needed (for image reloads)
   const timestamp = cacheBust ? `?t=${Date.now()}` : ''
-  return html.replace(
-    /<img([^>]*)\s+src="([^":/]+[^":]*)"/g,
-    (match, attrs, src) => {
-      // Only rewrite if it's a relative path (doesn't start with http://, https://, or /)
-      if (!src.startsWith('http://') && !src.startsWith('https://') && !src.startsWith('/')) {
-        return `<img${attrs} src="/api/static/${src}${timestamp}"`
-      }
-      return match
+  return html.replace(/<img([^>]*)\s+src="([^":/]+[^":]*)"/g, (match, attrs, src) => {
+    // Only rewrite if it's a relative path (doesn't start with http://, https://, or /)
+    if (!src.startsWith('http://') && !src.startsWith('https://') && !src.startsWith('/')) {
+      return `<img${attrs} src="/api/static/${src}${timestamp}"`
     }
-  )
+    return match
+  })
 }
 
 function App() {
@@ -64,8 +61,8 @@ function App() {
   useEffect(() => {
     // Fetch file list
     fetch('/api/files')
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setFiles(data.files)
         // Check if there's a file path in the URL hash
         const hash = window.location.hash.slice(1) // Remove the '#' prefix
@@ -83,10 +80,10 @@ function App() {
           loadFile(data.files[0].path)
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error fetching files:', err)
       })
-  }, [])
+  }, [loadFile])
 
   useEffect(() => {
     let ws: WebSocket | null = null
@@ -106,55 +103,55 @@ function App() {
               loadFile(currentPathRef.current, true)
             }
           } else if (message.type === 'FileAdded') {
-          // Handle new file added - refresh file list to show new file
-          fetch('/api/files')
-            .then(res => res.json())
-            .then(data => {
-              setFiles(data.files)
-            })
-        } else if (message.type === 'FileRenamed') {
-          // Handle file rename
-          if (currentPathRef.current === message.old_name) {
-            loadFile(message.new_name)
-          }
-          // Refresh file list
-          fetch('/api/files')
-            .then(res => res.json())
-            .then(data => {
-              setFiles(data.files)
-            })
-        } else if (message.type === 'FileRemoved') {
-          // Handle file removal
-          if (currentPathRef.current === message.name) {
-            // Current file was removed - use filesRef to get the old file list
-            const oldFiles = new Set(filesRef.current.map((f: ApiFile) => f.path))
-
-            // Fetch updated file list
+            // Handle new file added - refresh file list to show new file
             fetch('/api/files')
-              .then(res => res.json())
-              .then(data => {
-                const newFiles = data.files.map((f: ApiFile) => f.path)
-                const addedFiles = newFiles.filter((path: string) => !oldFiles.has(path))
-
-                setFiles(data.files)
-
-                // If exactly one file was added, it's likely a rename - load it
-                if (addedFiles.length === 1) {
-                  loadFile(addedFiles[0])
-                } else if (data.files.length > 0) {
-                  // Otherwise load first file
-                  loadFile(data.files[0].path)
-                }
-              })
-          } else {
-            // Just refresh the file list
-            fetch('/api/files')
-              .then(res => res.json())
-              .then(data => {
+              .then((res) => res.json())
+              .then((data) => {
                 setFiles(data.files)
               })
+          } else if (message.type === 'FileRenamed') {
+            // Handle file rename
+            if (currentPathRef.current === message.old_name) {
+              loadFile(message.new_name)
+            }
+            // Refresh file list
+            fetch('/api/files')
+              .then((res) => res.json())
+              .then((data) => {
+                setFiles(data.files)
+              })
+          } else if (message.type === 'FileRemoved') {
+            // Handle file removal
+            if (currentPathRef.current === message.name) {
+              // Current file was removed - use filesRef to get the old file list
+              const oldFiles = new Set(filesRef.current.map((f: ApiFile) => f.path))
+
+              // Fetch updated file list
+              fetch('/api/files')
+                .then((res) => res.json())
+                .then((data) => {
+                  const newFiles = data.files.map((f: ApiFile) => f.path)
+                  const addedFiles = newFiles.filter((path: string) => !oldFiles.has(path))
+
+                  setFiles(data.files)
+
+                  // If exactly one file was added, it's likely a rename - load it
+                  if (addedFiles.length === 1) {
+                    loadFile(addedFiles[0])
+                  } else if (data.files.length > 0) {
+                    // Otherwise load first file
+                    loadFile(data.files[0].path)
+                  }
+                })
+            } else {
+              // Just refresh the file list
+              fetch('/api/files')
+                .then((res) => res.json())
+                .then((data) => {
+                  setFiles(data.files)
+                })
+            }
           }
-        }
         } catch (error) {
           console.error('WebSocket message handler error:', error)
         }
@@ -182,34 +179,37 @@ function App() {
         ws.close()
       }
     }
-  }, [])  // Empty dependency array - WebSocket should persist for component lifetime
+  }, [loadFile])
 
-  const loadFile = (path: string, cacheBustImages = false) => {
-    fetch(`/api/files/${path}`)
-      .then(res => res.json())
-      .then(data => {
-        // Parse markdown to HTML client-side
-        let html = marked.parse(data.markdown) as string
-        // Wrap tables for horizontal scrolling
-        html = wrapTablesForScroll(html)
-        // Rewrite relative image paths to use /api/static/
-        html = rewriteImagePaths(html, cacheBustImages)
-        setContent(html)
-        setCurrentPath(path)
-        currentPathRef.current = path
-        // Update URL hash to reflect current file
-        window.location.hash = path
-        // Auto-expand folders containing the active file
-        const parts = path.split('/')
-        for (let i = 1; i < parts.length; i++) {
-          const folderPath = parts.slice(0, i).join('/')
-          expandFolder(folderPath)
-        }
-      })
-      .catch(err => {
-        console.error('Error loading file:', err)
-      })
-  }
+  const loadFile = useCallback(
+    (path: string, cacheBustImages = false) => {
+      fetch(`/api/files/${path}`)
+        .then((res) => res.json())
+        .then((data) => {
+          // Parse markdown to HTML client-side
+          let html = marked.parse(data.markdown) as string
+          // Wrap tables for horizontal scrolling
+          html = wrapTablesForScroll(html)
+          // Rewrite relative image paths to use /api/static/
+          html = rewriteImagePaths(html, cacheBustImages)
+          setContent(html)
+          setCurrentPath(path)
+          currentPathRef.current = path
+          // Update URL hash to reflect current file
+          window.location.hash = path
+          // Auto-expand folders containing the active file
+          const parts = path.split('/')
+          for (let i = 1; i < parts.length; i++) {
+            const folderPath = parts.slice(0, i).join('/')
+            expandFolder(folderPath)
+          }
+        })
+        .catch((err) => {
+          console.error('Error loading file:', err)
+        })
+    },
+    [expandFolder, setContent, setCurrentPath]
+  )
 
   const handleResizeStart = () => {
     startResizing()
@@ -236,8 +236,6 @@ function App() {
     const currentWidth = isCollapsed ? collapsedWidth : width
     document.documentElement.style.setProperty('--sidebar-width', `${currentWidth}px`)
   }, [width, isCollapsed, collapsedWidth])
-
-
 
   return (
     <div className={`app ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -269,7 +267,14 @@ function App() {
         )}
       </div>
       <div ref={contentRef} className="content">
-        {content && <MarkdownContent html={content} filePath={currentPath} theme={theme} onLinkClick={loadFile} />}
+        {content && (
+          <MarkdownContent
+            html={content}
+            filePath={currentPath}
+            theme={theme}
+            onLinkClick={loadFile}
+          />
+        )}
       </div>
     </div>
   )

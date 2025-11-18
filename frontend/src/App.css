@@ -15,7 +15,7 @@
   --transition-timing: ease;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg-color: #0d1117;
   --text-color: #e6edf3;
   --border-color: #30363d;
@@ -26,7 +26,7 @@
   --table-header-bg: #161b22;
 }
 
-[data-theme="catppuccin-latte"] {
+[data-theme='catppuccin-latte'] {
   --bg-color: #eff1f5;
   --text-color: #4c4f69;
   --border-color: #bcc0cc;
@@ -37,7 +37,7 @@
   --table-header-bg: #ccd0da;
 }
 
-[data-theme="catppuccin-macchiato"] {
+[data-theme='catppuccin-macchiato'] {
   --bg-color: #24273a;
   --text-color: #cad3f5;
   --border-color: #494d64;
@@ -48,7 +48,7 @@
   --table-header-bg: #363a4f;
 }
 
-[data-theme="catppuccin-mocha"] {
+[data-theme='catppuccin-mocha'] {
   --bg-color: #1e1e2e;
   --text-color: #cdd6f4;
   --border-color: #45475a;
@@ -64,8 +64,9 @@
   height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background-color var(--transition-speed) var(--transition-timing),
-              color var(--transition-speed) var(--transition-timing);
+  transition:
+    background-color var(--transition-speed) var(--transition-timing),
+    color var(--transition-speed) var(--transition-timing);
 }
 
 .sidebar {
@@ -80,9 +81,10 @@
   top: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  transition: width var(--transition-speed) var(--transition-timing),
-              min-width var(--transition-speed) var(--transition-timing),
-              background var(--transition-speed) var(--transition-timing);
+  transition:
+    width var(--transition-speed) var(--transition-timing),
+    min-width var(--transition-speed) var(--transition-timing),
+    background var(--transition-speed) var(--transition-timing);
 }
 
 .sidebar.resizing {
@@ -154,8 +156,9 @@
   padding: 40px 60px;
   min-height: 100vh;
   overflow-y: auto;
-  transition: margin-left var(--transition-speed) var(--transition-timing),
-              width var(--transition-speed) var(--transition-timing);
+  transition:
+    margin-left var(--transition-speed) var(--transition-timing),
+    width var(--transition-speed) var(--transition-timing);
 }
 
 .content.resizing {

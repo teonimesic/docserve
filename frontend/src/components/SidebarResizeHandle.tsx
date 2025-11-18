@@ -13,7 +13,11 @@ const setResizeCursor = (enabled: boolean) => {
   document.body.style.userSelect = enabled ? 'none' : ''
 }
 
-export function SidebarResizeHandle({ onResize, onResizeStart, onResizeEnd }: SidebarResizeHandleProps) {
+export function SidebarResizeHandle({
+  onResize,
+  onResizeStart,
+  onResizeEnd,
+}: SidebarResizeHandleProps) {
   const handleRef = useRef<HTMLDivElement>(null)
   const isResizingRef = useRef(false)
   const startXRef = useRef(0)

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { spawn, type ChildProcess } from 'child_process'
-import { mkdtempSync, writeFileSync, readFileSync, rmSync, renameSync, unlinkSync, mkdirSync } from 'fs'
+import { mkdtempSync, writeFileSync, rmSync, renameSync, unlinkSync, mkdirSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 
@@ -26,28 +26,20 @@ test.beforeAll(async () => {
   const testImagePath = join(testDir, 'test-image.png')
   // Create a minimal 1x1 PNG
   const pngData = Buffer.from([
-    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-    0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
-    0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
-    0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
-    0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
-    0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
-    0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
-    0x42, 0x60, 0x82
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4,
+    0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00,
+    0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae,
+    0x42, 0x60, 0x82,
   ])
   writeFileSync(testImagePath, pngData)
 
   // Start the docserve server
   const docservePath = join(process.cwd(), '../target/release/docserve')
-  serverProcess = spawn(
-    docservePath,
-    [testDir, '--port', SERVER_PORT.toString()],
-    {
-      stdio: 'pipe',
-      cwd: join(process.cwd(), '..'), // Run from project root so frontend/dist is found
-    }
-  )
+  serverProcess = spawn(docservePath, [testDir, '--port', SERVER_PORT.toString()], {
+    stdio: 'pipe',
+    cwd: join(process.cwd(), '..'), // Run from project root so frontend/dist is found
+  })
 
   serverProcess.on('error', (err) => {
     throw new Error(`Failed to start server: ${err.message}`)
@@ -414,8 +406,8 @@ test('should not have WebSocket connection errors', async ({ page }) => {
   )
 
   // Also check for specific WebSocket connection errors
-  const wsClosedBeforeConnectErrors = consoleMessages.filter(
-    (msg) => msg.includes('WebSocket is closed before the connection is established')
+  const wsClosedBeforeConnectErrors = consoleMessages.filter((msg) =>
+    msg.includes('WebSocket is closed before the connection is established')
   )
 
   expect(wsErrors).toHaveLength(0)
@@ -618,7 +610,10 @@ test('should resize sidebar when dragging resize handle', async ({ page }) => {
   // Drag the handle to resize (drag 100px to the right)
   await page.mouse.move(handleBox!.x + handleBox!.width / 2, handleBox!.y + handleBox!.height / 2)
   await page.mouse.down()
-  await page.mouse.move(handleBox!.x + handleBox!.width / 2 + 100, handleBox!.y + handleBox!.height / 2)
+  await page.mouse.move(
+    handleBox!.x + handleBox!.width / 2 + 100,
+    handleBox!.y + handleBox!.height / 2
+  )
   await page.mouse.up()
 
   // Wait for resize to complete

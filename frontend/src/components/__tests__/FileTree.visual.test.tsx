@@ -13,19 +13,17 @@ describe('FileTree Visual Tests', () => {
       isFolder: true,
       children: [
         { name: 'README.md', path: 'docs/README.md', isFolder: false },
-        { name: 'guide.md', path: 'docs/guide.md', isFolder: false }
-      ]
+        { name: 'guide.md', path: 'docs/guide.md', isFolder: false },
+      ],
     },
     {
       name: 'src',
       path: 'src',
       isFolder: true,
-      children: [
-        { name: 'index.ts', path: 'src/index.ts', isFolder: false }
-      ]
+      children: [{ name: 'index.ts', path: 'src/index.ts', isFolder: false }],
     },
     { name: 'package.json', path: 'package.json', isFolder: false },
-    { name: 'tsconfig.json', path: 'tsconfig.json', isFolder: false }
+    { name: 'tsconfig.json', path: 'tsconfig.json', isFolder: false },
   ]
 
   afterEach(() => {

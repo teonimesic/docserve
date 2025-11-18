@@ -96,7 +96,7 @@
   counter-increment: linenumber;
   color: #888;
   font-size: 14px;
-  line-height: 21px;  /* Match code line-height: 14px * 1.5 = 21px */
+  line-height: 21px; /* Match code line-height: 14px * 1.5 = 21px */
   text-align: right;
   font-family: monospace;
   height: 21px;

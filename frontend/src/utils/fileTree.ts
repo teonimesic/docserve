@@ -33,7 +33,7 @@ export function buildFileTree(files: ApiFile[]): FileTreeNode[] {
         currentNode.children = []
       }
 
-      let childNode = currentNode.children.find(child => child.name === part)
+      let childNode = currentNode.children.find((child) => child.name === part)
 
       if (!childNode) {
         const newNode: FileTreeNode = {
@@ -58,8 +58,8 @@ export function buildFileTree(files: ApiFile[]): FileTreeNode[] {
 
 function sortNodes(nodes: FileTreeNode[]): FileTreeNode[] {
   // Separate folders and files
-  const folders = nodes.filter(n => n.isFolder)
-  const files = nodes.filter(n => !n.isFolder)
+  const folders = nodes.filter((n) => n.isFolder)
+  const files = nodes.filter((n) => !n.isFolder)
 
   // Sort each group alphabetically
   folders.sort((a, b) => a.name.localeCompare(b.name))

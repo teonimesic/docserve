@@ -8,7 +8,7 @@ describe('CodeBlock', () => {
 
   it('renders code with correct language class', () => {
     const { container } = render(<CodeBlock code={sampleCode} language="javascript" />)
-    
+
     const codeElement = container.querySelector('code')
     expect(codeElement).toHaveClass('language-javascript')
     expect(codeElement?.textContent).toBe(sampleCode)
@@ -16,20 +16,20 @@ describe('CodeBlock', () => {
 
   it('displays language label', () => {
     render(<CodeBlock code={sampleCode} language="typescript" />)
-    
+
     expect(screen.getByText('typescript')).toBeInTheDocument()
   })
 
   it('has toggle line numbers button', () => {
     render(<CodeBlock code={sampleCode} language="javascript" />)
-    
+
     const toggleButton = screen.getByRole('button', { name: /toggle line numbers/i })
     expect(toggleButton).toBeInTheDocument()
   })
 
   it('has copy button', () => {
     render(<CodeBlock code={sampleCode} language="javascript" />)
-    
+
     const copyButton = screen.getByRole('button', { name: /copy code/i })
     expect(copyButton).toBeInTheDocument()
   })
@@ -37,19 +37,19 @@ describe('CodeBlock', () => {
   it('toggles line numbers when clicked', async () => {
     const user = userEvent.setup()
     const { container } = render(<CodeBlock code={sampleCode} language="javascript" />)
-    
+
     const toggleButton = screen.getByRole('button', { name: /toggle line numbers/i })
     const preElement = container.querySelector('pre')
-    
+
     // Initially no line numbers (based on default sessionStorage)
     expect(preElement).not.toHaveClass('line-numbers')
-    
+
     // Click to enable
     await user.click(toggleButton)
     await waitFor(() => {
       expect(preElement).toHaveClass('line-numbers')
     })
-    
+
     // Click to disable
     await user.click(toggleButton)
     await waitFor(() => {
@@ -77,7 +77,7 @@ describe('CodeBlock', () => {
 
   it('maps language aliases correctly', () => {
     const { container } = render(<CodeBlock code={sampleCode} language="js" />)
-    
+
     const codeElement = container.querySelector('code')
     // Should map 'js' to 'javascript'
     expect(codeElement).toHaveClass('language-javascript')
@@ -122,7 +122,7 @@ describe('CodeBlock', () => {
 
     Object.defineProperty(navigator, 'clipboard', {
       value: {
-        writeText: vi.fn().mockRejectedValue(new Error('Clipboard error'))
+        writeText: vi.fn().mockRejectedValue(new Error('Clipboard error')),
       },
       writable: true,
       configurable: true,

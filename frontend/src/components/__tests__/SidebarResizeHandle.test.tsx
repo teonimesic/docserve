@@ -9,11 +9,7 @@ describe('SidebarResizeHandle', () => {
     const mockEnd = vi.fn()
 
     const { container } = render(
-      <SidebarResizeHandle
-        onResize={mockResize}
-        onResizeStart={mockStart}
-        onResizeEnd={mockEnd}
-      />
+      <SidebarResizeHandle onResize={mockResize} onResizeStart={mockStart} onResizeEnd={mockEnd} />
     )
 
     const handle = container.querySelector('.sidebar-resize-handle')
@@ -26,11 +22,7 @@ describe('SidebarResizeHandle', () => {
     const mockEnd = vi.fn()
 
     const { container } = render(
-      <SidebarResizeHandle
-        onResize={mockResize}
-        onResizeStart={mockStart}
-        onResizeEnd={mockEnd}
-      />
+      <SidebarResizeHandle onResize={mockResize} onResizeStart={mockStart} onResizeEnd={mockEnd} />
     )
 
     const handle = container.querySelector('.sidebar-resize-handle')!
@@ -47,11 +39,7 @@ describe('SidebarResizeHandle', () => {
     const mockEnd = vi.fn()
 
     const { container } = render(
-      <SidebarResizeHandle
-        onResize={mockResize}
-        onResizeStart={mockStart}
-        onResizeEnd={mockEnd}
-      />
+      <SidebarResizeHandle onResize={mockResize} onResizeStart={mockStart} onResizeEnd={mockEnd} />
     )
 
     const handle = container.querySelector('.sidebar-resize-handle')!
@@ -75,11 +63,7 @@ describe('SidebarResizeHandle', () => {
     const mockEnd = vi.fn()
 
     render(
-      <SidebarResizeHandle
-        onResize={mockResize}
-        onResizeStart={mockStart}
-        onResizeEnd={mockEnd}
-      />
+      <SidebarResizeHandle onResize={mockResize} onResizeStart={mockStart} onResizeEnd={mockEnd} />
     )
 
     // Move mouse without starting resize
@@ -94,11 +78,7 @@ describe('SidebarResizeHandle', () => {
     const mockEnd = vi.fn()
 
     const { container } = render(
-      <SidebarResizeHandle
-        onResize={mockResize}
-        onResizeStart={mockStart}
-        onResizeEnd={mockEnd}
-      />
+      <SidebarResizeHandle onResize={mockResize} onResizeStart={mockStart} onResizeEnd={mockEnd} />
     )
 
     const handle = container.querySelector('.sidebar-resize-handle')!
@@ -121,11 +101,7 @@ describe('SidebarResizeHandle', () => {
     const mockEnd = vi.fn()
 
     render(
-      <SidebarResizeHandle
-        onResize={mockResize}
-        onResizeStart={mockStart}
-        onResizeEnd={mockEnd}
-      />
+      <SidebarResizeHandle onResize={mockResize} onResizeStart={mockStart} onResizeEnd={mockEnd} />
     )
 
     // Mouse up without starting resize
@@ -140,11 +116,7 @@ describe('SidebarResizeHandle', () => {
     const mockEnd = vi.fn()
 
     const { container } = render(
-      <SidebarResizeHandle
-        onResize={mockResize}
-        onResizeStart={mockStart}
-        onResizeEnd={mockEnd}
-      />
+      <SidebarResizeHandle onResize={mockResize} onResizeStart={mockStart} onResizeEnd={mockEnd} />
     )
 
     const handle = container.querySelector('.sidebar-resize-handle')!

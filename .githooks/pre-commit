@@ -1,0 +1,73 @@
+#!/bin/sh
+# Pre-commit hook for mdocserve
+# Runs formatting and linting checks before allowing commits
+
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Check if we're in the right directory
+if [ ! -f "Cargo.toml" ]; then
+    echo "${RED}Error: Not in project root directory${NC}"
+    exit 1
+fi
+
+# Backend checks
+echo "\n${YELLOW}Backend: Checking Rust formatting...${NC}"
+if ! cargo fmt --check; then
+    echo "${RED}❌ Rust formatting check failed!${NC}"
+    echo "${YELLOW}Run 'cargo fmt' to fix formatting issues${NC}"
+    exit 1
+fi
+echo "${GREEN}✅ Rust formatting OK${NC}"
+
+echo "\n${YELLOW}Backend: Running clippy...${NC}"
+if ! cargo clippy --all-targets --all-features -- -D warnings; then
+    echo "${RED}❌ Clippy found issues!${NC}"
+    echo "${YELLOW}Fix the issues above before committing${NC}"
+    exit 1
+fi
+echo "${GREEN}✅ Clippy checks passed${NC}"
+
+# Frontend checks (only if frontend files changed)
+FRONTEND_CHANGED=$(git diff --cached --name-only | grep "^frontend/" || true)
+if [ -n "$FRONTEND_CHANGED" ]; then
+    echo "\n${YELLOW}Frontend: Checking formatting...${NC}"
+    if ! npm --prefix frontend run format:check; then
+        echo "${RED}❌ Prettier formatting check failed!${NC}"
+        echo "${YELLOW}Run 'npm run format' to fix formatting issues${NC}"
+        exit 1
+    fi
+    echo "${GREEN}✅ Prettier formatting OK${NC}"
+
+    echo "\n${YELLOW}Frontend: Running ESLint...${NC}"
+    if ! npm --prefix frontend run lint; then
+        echo "${RED}❌ ESLint found issues!${NC}"
+        echo "${YELLOW}Run 'npm run lint:fix' to auto-fix some issues${NC}"
+        exit 1
+    fi
+    echo "${GREEN}✅ ESLint checks passed${NC}"
+
+    echo "\n${YELLOW}Frontend: Type checking...${NC}"
+    if ! npm --prefix frontend run typecheck; then
+        echo "${RED}❌ TypeScript type check failed!${NC}"
+        exit 1
+    fi
+    echo "${GREEN}✅ Type check passed${NC}"
+
+    echo "\n${YELLOW}Frontend: Running tests...${NC}"
+    if ! npm --prefix frontend test; then
+        echo "${RED}❌ Frontend tests failed!${NC}"
+        exit 1
+    fi
+    echo "${GREEN}✅ Frontend tests passed${NC}"
+fi
+
+echo "\n${GREEN}✨ All pre-commit checks passed!${NC}"
+exit 0

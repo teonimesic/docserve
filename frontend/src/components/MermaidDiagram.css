@@ -74,30 +74,30 @@
 }
 
 /* Dark theme adjustments */
-[data-theme="dark"] .mermaid-error,
-[data-theme="catppuccin-mocha"] .mermaid-error,
-[data-theme="catppuccin-macchiato"] .mermaid-error {
+[data-theme='dark'] .mermaid-error,
+[data-theme='catppuccin-mocha'] .mermaid-error,
+[data-theme='catppuccin-macchiato'] .mermaid-error {
   background: #3a1f1f;
   border-color: #5a2f2f;
   color: #ffaaaa;
 }
 
-[data-theme="dark"] .mermaid-error-message,
-[data-theme="catppuccin-mocha"] .mermaid-error-message,
-[data-theme="catppuccin-macchiato"] .mermaid-error-message {
+[data-theme='dark'] .mermaid-error-message,
+[data-theme='catppuccin-mocha'] .mermaid-error-message,
+[data-theme='catppuccin-macchiato'] .mermaid-error-message {
   background: var(--code-bg);
   color: var(--text-color);
 }
 
-[data-theme="dark"] .mermaid-error-details pre,
-[data-theme="catppuccin-mocha"] .mermaid-error-details pre,
-[data-theme="catppuccin-macchiato"] .mermaid-error-details pre {
+[data-theme='dark'] .mermaid-error-details pre,
+[data-theme='catppuccin-mocha'] .mermaid-error-details pre,
+[data-theme='catppuccin-macchiato'] .mermaid-error-details pre {
   background: var(--code-bg);
   color: var(--text-color);
 }
 
-[data-theme="dark"] .mermaid-error-details code,
-[data-theme="catppuccin-mocha"] .mermaid-error-details code,
-[data-theme="catppuccin-macchiato"] .mermaid-error-details code {
+[data-theme='dark'] .mermaid-error-details code,
+[data-theme='catppuccin-mocha'] .mermaid-error-details code,
+[data-theme='catppuccin-macchiato'] .mermaid-error-details code {
   color: var(--text-color);
 }

@@ -10,11 +10,9 @@ describe('FileTree', () => {
         name: 'folder1',
         path: 'folder1',
         isFolder: true,
-        children: [
-          { name: 'file1.md', path: 'folder1/file1.md', isFolder: false }
-        ]
+        children: [{ name: 'file1.md', path: 'folder1/file1.md', isFolder: false }],
       },
-      { name: 'file2.md', path: 'file2.md', isFolder: false }
+      { name: 'file2.md', path: 'file2.md', isFolder: false },
     ]
 
     const { getByText } = render(
@@ -38,10 +36,8 @@ describe('FileTree', () => {
         name: 'folder1',
         path: 'folder1',
         isFolder: true,
-        children: [
-          { name: 'file1.md', path: 'folder1/file1.md', isFolder: false }
-        ]
-      }
+        children: [{ name: 'file1.md', path: 'folder1/file1.md', isFolder: false }],
+      },
     ]
 
     const { queryByText, getByText } = render(
@@ -59,9 +55,6 @@ describe('FileTree', () => {
   })
 
   it('memoizes TreeNode to prevent re-renders of collapsed subtrees', () => {
-    // Track render counts for each node
-    const renderCounts = new Map<string, number>()
-
     // Create a large tree structure with multiple folders
     const nodes: FileTreeNode[] = [
       {
@@ -70,8 +63,8 @@ describe('FileTree', () => {
         isFolder: true,
         children: [
           { name: 'file1.md', path: 'folder1/file1.md', isFolder: false },
-          { name: 'file2.md', path: 'folder1/file2.md', isFolder: false }
-        ]
+          { name: 'file2.md', path: 'folder1/file2.md', isFolder: false },
+        ],
       },
       {
         name: 'folder2',
@@ -79,17 +72,15 @@ describe('FileTree', () => {
         isFolder: true,
         children: [
           { name: 'file3.md', path: 'folder2/file3.md', isFolder: false },
-          { name: 'file4.md', path: 'folder2/file4.md', isFolder: false }
-        ]
+          { name: 'file4.md', path: 'folder2/file4.md', isFolder: false },
+        ],
       },
       {
         name: 'folder3',
         path: 'folder3',
         isFolder: true,
-        children: [
-          { name: 'file5.md', path: 'folder3/file5.md', isFolder: false }
-        ]
-      }
+        children: [{ name: 'file5.md', path: 'folder3/file5.md', isFolder: false }],
+      },
     ]
 
     const expandedFolders = new Set<string>(['folder1'])
@@ -119,8 +110,8 @@ describe('FileTree', () => {
         children: [
           { name: 'file1.md', path: 'folder1/file1.md', isFolder: false },
           { name: 'file2.md', path: 'folder1/file2.md', isFolder: false },
-          { name: 'new-file.md', path: 'folder1/new-file.md', isFolder: false } // New file
-        ]
+          { name: 'new-file.md', path: 'folder1/new-file.md', isFolder: false }, // New file
+        ],
       },
       {
         name: 'folder2',
@@ -128,17 +119,15 @@ describe('FileTree', () => {
         isFolder: true,
         children: [
           { name: 'file3.md', path: 'folder2/file3.md', isFolder: false },
-          { name: 'file4.md', path: 'folder2/file4.md', isFolder: false }
-        ]
+          { name: 'file4.md', path: 'folder2/file4.md', isFolder: false },
+        ],
       },
       {
         name: 'folder3',
         path: 'folder3',
         isFolder: true,
-        children: [
-          { name: 'file5.md', path: 'folder3/file5.md', isFolder: false }
-        ]
-      }
+        children: [{ name: 'file5.md', path: 'folder3/file5.md', isFolder: false }],
+      },
     ]
 
     // Re-render with updated nodes
@@ -168,9 +157,9 @@ describe('FileTree', () => {
         isFolder: true,
         children: [
           { name: 'file1.md', path: 'folder1/file1.md', isFolder: false },
-          { name: 'file2.md', path: 'folder1/file2.md', isFolder: false }
-        ]
-      }
+          { name: 'file2.md', path: 'folder1/file2.md', isFolder: false },
+        ],
+      },
     ]
 
     const onFileSelect = vi.fn()
@@ -210,9 +199,7 @@ describe('FileTree', () => {
 
   it('calls onFileSelect when file is clicked', () => {
     const onFileSelect = vi.fn()
-    const nodes: FileTreeNode[] = [
-      { name: 'file1.md', path: 'file1.md', isFolder: false }
-    ]
+    const nodes: FileTreeNode[] = [{ name: 'file1.md', path: 'file1.md', isFolder: false }]
 
     const { getByText } = render(
       <FileTree
@@ -235,8 +222,8 @@ describe('FileTree', () => {
         name: 'folder1',
         path: 'folder1',
         isFolder: true,
-        children: []
-      }
+        children: [],
+      },
     ]
 
     const { getByText } = render(
@@ -264,12 +251,10 @@ describe('FileTree', () => {
             name: 'child',
             path: 'parent/child',
             isFolder: true,
-            children: [
-              { name: 'file.md', path: 'parent/child/file.md', isFolder: false }
-            ]
-          }
-        ]
-      }
+            children: [{ name: 'file.md', path: 'parent/child/file.md', isFolder: false }],
+          },
+        ],
+      },
     ]
 
     const expandedPaths = new Set(['parent', 'parent/child'])
@@ -295,11 +280,9 @@ describe('FileTree', () => {
         name: 'folder1',
         path: 'folder1',
         isFolder: true,
-        children: [
-          { name: 'file1.md', path: 'folder1/file1.md', isFolder: false }
-        ]
+        children: [{ name: 'file1.md', path: 'folder1/file1.md', isFolder: false }],
       },
-      { name: 'file2.md', path: 'file2.md', isFolder: false }
+      { name: 'file2.md', path: 'file2.md', isFolder: false },
     ]
 
     const { container } = render(
@@ -321,14 +304,18 @@ describe('FileTree', () => {
     expect(fileIcons.length).toBeGreaterThan(0)
 
     // Ensure no emoji characters in icon elements
-    const folderIconTexts = Array.from(container.querySelectorAll('.folder-icon')).map(el => el.textContent)
-    const fileIconTexts = Array.from(container.querySelectorAll('.file-icon')).map(el => el.textContent)
+    const folderIconTexts = Array.from(container.querySelectorAll('.folder-icon')).map(
+      (el) => el.textContent
+    )
+    const fileIconTexts = Array.from(container.querySelectorAll('.file-icon')).map(
+      (el) => el.textContent
+    )
 
-    folderIconTexts.forEach(text => {
+    folderIconTexts.forEach((text) => {
       expect(text).not.toContain('📁')
     })
 
-    fileIconTexts.forEach(text => {
+    fileIconTexts.forEach((text) => {
       expect(text).not.toContain('📄')
     })
   })
