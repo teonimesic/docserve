@@ -14,17 +14,17 @@ describe('buildFileTree', () => {
     expect(tree).toHaveLength(2)
 
     // Root level file
-    const readme = tree.find(node => node.name === 'README.md')
+    const readme = tree.find((node) => node.name === 'README.md')
     expect(readme).toBeDefined()
     expect(readme?.isFolder).toBe(false)
     expect(readme?.path).toBe('README.md')
 
     // Folder with children
-    const docsFolder = tree.find(node => node.name === 'docs')
+    const docsFolder = tree.find((node) => node.name === 'docs')
     expect(docsFolder).toBeDefined()
     expect(docsFolder?.isFolder).toBe(true)
     expect(docsFolder?.children).toHaveLength(2)
-    expect(docsFolder?.children?.map(c => c.name)).toEqual(['guide.md', 'intro.md'])
+    expect(docsFolder?.children?.map((c) => c.name)).toEqual(['guide.md', 'intro.md'])
   })
 
   it('should handle nested folders', () => {
@@ -44,13 +44,13 @@ describe('buildFileTree', () => {
     expect(docsFolder.children).toHaveLength(2)
 
     // Check for 'api' folder and 'setup.md' file
-    const apiFolder = docsFolder.children!.find(node => node.name === 'api')!
-    const setupFile = docsFolder.children!.find(node => node.name === 'setup.md')!
+    const apiFolder = docsFolder.children!.find((node) => node.name === 'api')!
+    const setupFile = docsFolder.children!.find((node) => node.name === 'setup.md')!
 
     expect(apiFolder).toBeDefined()
     expect(apiFolder.isFolder).toBe(true)
     expect(apiFolder.children).toHaveLength(2)
-    expect(apiFolder.children!.map(c => c.name)).toEqual(['auth.md', 'config.md'])
+    expect(apiFolder.children!.map((c) => c.name)).toEqual(['auth.md', 'config.md'])
 
     expect(setupFile).toBeDefined()
     expect(setupFile.isFolder).toBe(false)
@@ -70,7 +70,7 @@ describe('buildFileTree', () => {
 
     const tree = buildFileTree(files)
 
-    expect(tree.map(n => n.name)).toEqual(['alpha.md', 'beta.md', 'zebra.md'])
+    expect(tree.map((n) => n.name)).toEqual(['alpha.md', 'beta.md', 'zebra.md'])
   })
 
   it('should place folders before files at each level', () => {

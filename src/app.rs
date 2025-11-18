@@ -296,12 +296,12 @@ async fn handle_markdown_file_change(path: &Path, state: &SharedMarkdownState) {
         if state_guard.refresh_file(&relative_path).is_ok() {
             let _ = state_guard.change_tx.send(ServerMessage::Reload);
         }
-    } else if state_guard.is_directory_mode {
-        if state_guard.add_tracked_file(path.to_path_buf()).is_ok() {
-            let _ = state_guard
-                .change_tx
-                .send(ServerMessage::FileAdded { name: relative_path });
-        }
+    } else if state_guard.is_directory_mode
+        && state_guard.add_tracked_file(path.to_path_buf()).is_ok()
+    {
+        let _ = state_guard.change_tx.send(ServerMessage::FileAdded {
+            name: relative_path,
+        });
     }
 }
 
@@ -373,7 +373,8 @@ async fn rescan_and_detect_changes(state: &SharedMarkdownState) {
         return;
     }
 
-    let new_files: std::collections::HashSet<String> = guard.tracked_files.keys().cloned().collect();
+    let new_files: std::collections::HashSet<String> =
+        guard.tracked_files.keys().cloned().collect();
 
     let change_type = detect_file_change(&old_files, &new_files, &old_hashes, &guard.tracked_files);
     send_change_message(change_type, &guard.change_tx);
@@ -840,13 +841,15 @@ mod tests {
     #[test]
     fn test_markdown_state_add_tracked_file() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path.clone()], true)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path.clone()], true)
+            .expect("Failed to create state");
 
         let new_file = base_dir.join("new.md");
         fs::write(&new_file, "# New").expect("Failed to write");
@@ -857,19 +860,24 @@ mod tests {
 
         let relative_path = "new.md";
         assert!(state.tracked_files.contains_key(relative_path));
-        assert_eq!(state.tracked_files.get(relative_path).unwrap().markdown, "# New");
+        assert_eq!(
+            state.tracked_files.get(relative_path).unwrap().markdown,
+            "# New"
+        );
     }
 
     #[test]
     fn test_markdown_state_add_tracked_file_duplicate() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path.clone()], true)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path.clone()], true)
+            .expect("Failed to create state");
 
         // Adding the same file again should succeed but not duplicate
         state
@@ -882,13 +890,15 @@ mod tests {
     #[test]
     fn test_markdown_state_update_file() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path.clone()], false)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path.clone()], false)
+            .expect("Failed to create state");
 
         state
             .update_file("test.md", "# Updated")
@@ -896,19 +906,24 @@ mod tests {
 
         let content = fs::read_to_string(&file_path).expect("Failed to read");
         assert_eq!(content, "# Updated");
-        assert_eq!(state.tracked_files.get("test.md").unwrap().markdown, "# Updated");
+        assert_eq!(
+            state.tracked_files.get("test.md").unwrap().markdown,
+            "# Updated"
+        );
     }
 
     #[test]
     fn test_markdown_state_update_file_not_found() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path], false)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path], false)
+            .expect("Failed to create state");
 
         let result = state.update_file("nonexistent.md", "# New");
         assert!(result.is_err());
@@ -918,13 +933,15 @@ mod tests {
     #[test]
     fn test_markdown_state_refresh_file() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path.clone()], false)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path.clone()], false)
+            .expect("Failed to create state");
 
         // Modify the file externally
         std::thread::sleep(std::time::Duration::from_millis(10));
@@ -932,19 +949,24 @@ mod tests {
 
         state.refresh_file("test.md").expect("Failed to refresh");
 
-        assert_eq!(state.tracked_files.get("test.md").unwrap().markdown, "# Modified");
+        assert_eq!(
+            state.tracked_files.get("test.md").unwrap().markdown,
+            "# Modified"
+        );
     }
 
     #[test]
     fn test_markdown_state_rescan_directory() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path], true)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path], true)
+            .expect("Failed to create state");
 
         // Add a new file
         let new_file = base_dir.join("new.md");
@@ -959,13 +981,15 @@ mod tests {
     #[test]
     fn test_markdown_state_rescan_directory_no_changes() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path], true)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path], true)
+            .expect("Failed to create state");
 
         let changed = state.rescan_directory().expect("Failed to rescan");
         assert!(!changed);
@@ -974,13 +998,15 @@ mod tests {
     #[test]
     fn test_markdown_state_rescan_directory_single_file_mode() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state =
-            MarkdownState::new(base_dir.clone(), vec![file_path], false)
-                .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path], false)
+            .expect("Failed to create state");
 
         let changed = state.rescan_directory().expect("Failed to rescan");
         assert!(!changed);
@@ -989,7 +1015,10 @@ mod tests {
     #[test]
     fn test_markdown_state_rescan_directory_file_removed() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file1 = base_dir.join("test1.md");
         let file2 = base_dir.join("test2.md");
         fs::write(&file1, "# Test 1").expect("Failed to write");
@@ -1164,13 +1193,19 @@ mod tests {
         assert_eq!(guess_image_content_type("test.webp"), "image/webp");
         assert_eq!(guess_image_content_type("test.bmp"), "image/bmp");
         assert_eq!(guess_image_content_type("test.ico"), "image/x-icon");
-        assert_eq!(guess_image_content_type("test.txt"), "application/octet-stream");
+        assert_eq!(
+            guess_image_content_type("test.txt"),
+            "application/octet-stream"
+        );
     }
 
     #[test]
     fn test_markdown_state_get_sorted_filenames() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
 
         let file1 = base_dir.join("b.md");
         let file2 = base_dir.join("a.md");
@@ -1180,12 +1215,8 @@ mod tests {
         fs::write(&file2, "# A").expect("Failed to write");
         fs::write(&file3, "# C").expect("Failed to write");
 
-        let state = MarkdownState::new(
-            base_dir.clone(),
-            vec![file1, file2, file3],
-            true,
-        )
-        .expect("Failed to create state");
+        let state = MarkdownState::new(base_dir.clone(), vec![file1, file2, file3], true)
+            .expect("Failed to create state");
 
         let sorted = state.get_sorted_filenames();
         assert_eq!(sorted, vec!["a.md", "b.md", "c.md"]);
@@ -1194,7 +1225,10 @@ mod tests {
     #[test]
     fn test_calculate_relative_path() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
 
         fs::write(&file_path, "# Test").expect("Failed to write");
@@ -1207,7 +1241,10 @@ mod tests {
     #[test]
     fn test_calculate_relative_path_nested() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let nested_dir = base_dir.join("nested");
         fs::create_dir(&nested_dir).expect("Failed to create nested dir");
         let file_path = nested_dir.join("test.md");
@@ -1235,17 +1272,16 @@ mod tests {
     #[test]
     fn test_markdown_state_refresh_file_not_modified() {
         let temp_dir = tempdir().expect("Failed to create temp dir");
-        let base_dir = temp_dir.path().canonicalize().expect("Failed to canonicalize");
+        let base_dir = temp_dir
+            .path()
+            .canonicalize()
+            .expect("Failed to canonicalize");
         let file_path = base_dir.join("test.md");
 
         fs::write(&file_path, "# Test").expect("Failed to write");
 
-        let mut state = MarkdownState::new(
-            base_dir.clone(),
-            vec![file_path.clone()],
-            false,
-        )
-        .expect("Failed to create state");
+        let mut state = MarkdownState::new(base_dir.clone(), vec![file_path.clone()], false)
+            .expect("Failed to create state");
 
         // Get original content
         let original_content = state.tracked_files.get("test.md").unwrap().markdown.clone();
@@ -1254,7 +1290,10 @@ mod tests {
         state.refresh_file("test.md").expect("Failed to refresh");
 
         // Content should be unchanged
-        assert_eq!(state.tracked_files.get("test.md").unwrap().markdown, original_content);
+        assert_eq!(
+            state.tracked_files.get("test.md").unwrap().markdown,
+            original_content
+        );
     }
 
     #[test]

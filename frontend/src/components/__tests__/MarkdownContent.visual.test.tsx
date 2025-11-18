@@ -57,7 +57,7 @@ describe('MarkdownContent Visual Tests', () => {
   describe('Complex content (all themes)', () => {
     it('renders complex markdown in light theme', async () => {
       document.documentElement.setAttribute('data-theme', 'light')
-      globalThis.fetch = vi.fn() as any
+      globalThis.fetch = vi.fn() as unknown as typeof fetch
 
       render(
         <div style={{ padding: '20px', maxWidth: '800px' }}>
@@ -71,7 +71,7 @@ describe('MarkdownContent Visual Tests', () => {
 
     it('renders complex markdown in dark theme', async () => {
       document.documentElement.setAttribute('data-theme', 'dark')
-      globalThis.fetch = vi.fn() as any
+      globalThis.fetch = vi.fn() as unknown as typeof fetch
 
       render(
         <div style={{ padding: '20px', maxWidth: '800px' }}>
@@ -85,7 +85,7 @@ describe('MarkdownContent Visual Tests', () => {
 
     it('renders complex markdown in catppuccin-latte theme', async () => {
       document.documentElement.setAttribute('data-theme', 'catppuccin-latte')
-      globalThis.fetch = vi.fn() as any
+      globalThis.fetch = vi.fn() as unknown as typeof fetch
 
       render(
         <div style={{ padding: '20px', maxWidth: '800px' }}>
@@ -99,7 +99,7 @@ describe('MarkdownContent Visual Tests', () => {
 
     it('renders complex markdown in catppuccin-macchiato theme', async () => {
       document.documentElement.setAttribute('data-theme', 'catppuccin-macchiato')
-      globalThis.fetch = vi.fn() as any
+      globalThis.fetch = vi.fn() as unknown as typeof fetch
 
       render(
         <div style={{ padding: '20px', maxWidth: '800px' }}>
@@ -113,7 +113,7 @@ describe('MarkdownContent Visual Tests', () => {
 
     it('renders complex markdown in catppuccin-mocha theme', async () => {
       document.documentElement.setAttribute('data-theme', 'catppuccin-mocha')
-      globalThis.fetch = vi.fn() as any
+      globalThis.fetch = vi.fn() as unknown as typeof fetch
 
       render(
         <div style={{ padding: '20px', maxWidth: '800px' }}>

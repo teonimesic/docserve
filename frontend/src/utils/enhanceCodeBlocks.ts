@@ -11,13 +11,15 @@ export function enhanceCodeBlocks(container: HTMLElement) {
   })
 
   // Add copy buttons and line number toggles
-  const preElements = container.querySelectorAll('pre:has(> code[class*="language-"]):not(:has(.code-block-header))')
+  const preElements = container.querySelectorAll(
+    'pre:has(> code[class*="language-"]):not(:has(.code-block-header))'
+  )
   preElements.forEach((preElement: Element) => {
     const codeElement = preElement.querySelector('code')
     if (!codeElement) return
 
     const classes = codeElement.className.split(' ')
-    const languageClass = classes.find(cls => cls.startsWith('language-'))
+    const languageClass = classes.find((cls) => cls.startsWith('language-'))
     const language = languageClass ? languageClass.replace('language-', '') : 'text'
 
     // Create wrapper
@@ -38,7 +40,8 @@ export function enhanceCodeBlocks(container: HTMLElement) {
     // Line numbers toggle button
     const lineNumbersBtn = document.createElement('button')
     lineNumbersBtn.className = 'code-block-btn'
-    lineNumbersBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="3" x2="12" y2="3"/><line x1="4" y1="8" x2="12" y2="8"/><line x1="4" y1="13" x2="12" y2="13"/><circle cx="1.5" cy="3" r="0.5" fill="currentColor"/><circle cx="1.5" cy="8" r="0.5" fill="currentColor"/><circle cx="1.5" cy="13" r="0.5" fill="currentColor"/></svg>'
+    lineNumbersBtn.innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="3" x2="12" y2="3"/><line x1="4" y1="8" x2="12" y2="8"/><line x1="4" y1="13" x2="12" y2="13"/><circle cx="1.5" cy="3" r="0.5" fill="currentColor"/><circle cx="1.5" cy="8" r="0.5" fill="currentColor"/><circle cx="1.5" cy="13" r="0.5" fill="currentColor"/></svg>'
     lineNumbersBtn.title = 'Toggle line numbers'
 
     // Restore line numbers state from sessionStorage
@@ -55,15 +58,18 @@ export function enhanceCodeBlocks(container: HTMLElement) {
     // Copy button
     const copyBtn = document.createElement('button')
     copyBtn.className = 'code-block-btn'
-    copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="8" height="10" rx="1"/><path d="M8 4V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-2"/></svg>'
+    copyBtn.innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="8" height="10" rx="1"/><path d="M8 4V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-2"/></svg>'
     copyBtn.title = 'Copy code'
     copyBtn.onclick = async () => {
       try {
         await navigator.clipboard.writeText(codeElement.textContent || '')
-        copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,8 6,11 13,4"/></svg>'
+        copyBtn.innerHTML =
+          '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,8 6,11 13,4"/></svg>'
         copyBtn.classList.add('copied')
         setTimeout(() => {
-          copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="8" height="10" rx="1"/><path d="M8 4V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-2"/></svg>'
+          copyBtn.innerHTML =
+            '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="8" height="10" rx="1"/><path d="M8 4V2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-2"/></svg>'
           copyBtn.classList.remove('copied')
         }, 2000)
       } catch (err) {

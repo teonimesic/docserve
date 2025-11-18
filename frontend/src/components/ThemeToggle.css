@@ -9,8 +9,9 @@
   cursor: pointer;
   font-size: 14px;
   color: var(--text-color);
-  transition: background 0.2s var(--transition-timing),
-              border-color var(--transition-speed) var(--transition-timing);
+  transition:
+    background 0.2s var(--transition-timing),
+    border-color var(--transition-speed) var(--transition-timing);
   z-index: 100;
 }
 

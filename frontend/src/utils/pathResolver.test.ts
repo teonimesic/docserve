@@ -48,7 +48,9 @@ describe('resolveRelativePath', () => {
 
   describe('grandchild directory navigation', () => {
     it('should resolve grandchild from root', () => {
-      expect(resolveRelativePath('root.md', 'child/grandchild/file.md')).toBe('child/grandchild/file.md')
+      expect(resolveRelativePath('root.md', 'child/grandchild/file.md')).toBe(
+        'child/grandchild/file.md'
+      )
     })
 
     it('should resolve grandchild from nested directory', () => {
@@ -129,6 +131,6 @@ describe('isRelativeMarkdownLink', () => {
 
   it('should return false for empty or null href', () => {
     expect(isRelativeMarkdownLink('')).toBe(false)
-    expect(isRelativeMarkdownLink(null as any)).toBe(false)
+    expect(isRelativeMarkdownLink(null as unknown as string)).toBe(false)
   })
 })

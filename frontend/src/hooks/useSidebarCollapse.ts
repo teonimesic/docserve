@@ -8,7 +8,7 @@ export function useSidebarCollapse() {
   })
 
   const toggle = useCallback(() => {
-    setIsCollapsed(prev => {
+    setIsCollapsed((prev) => {
       const next = !prev
       localStorage.setItem('sidebar-collapsed', next ? 'true' : 'false')
       return next

@@ -13,7 +13,7 @@ export function useFolderState() {
   })
 
   const toggleFolder = useCallback((path: string) => {
-    setExpandedFolders(prev => {
+    setExpandedFolders((prev) => {
       const next = new Set(prev)
       if (next.has(path)) {
         next.delete(path)
@@ -28,7 +28,7 @@ export function useFolderState() {
   }, [])
 
   const expandFolder = useCallback((path: string) => {
-    setExpandedFolders(prev => {
+    setExpandedFolders((prev) => {
       if (prev.has(path)) return prev
       const next = new Set(prev)
       next.add(path)
@@ -38,9 +38,12 @@ export function useFolderState() {
     })
   }, [])
 
-  const isExpanded = useCallback((path: string) => {
-    return expandedFolders.has(path)
-  }, [expandedFolders])
+  const isExpanded = useCallback(
+    (path: string) => {
+      return expandedFolders.has(path)
+    },
+    [expandedFolders]
+  )
 
   return {
     isExpanded,

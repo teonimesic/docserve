@@ -4,7 +4,15 @@ import '@testing-library/jest-dom/vitest'
 
 // Mock Prism globally for all tests
 // Use globalThis which works in both Node and browser environments
-;(globalThis as any).Prism = {
+interface GlobalWithPrism {
+  Prism: {
+    highlightElement: ReturnType<typeof vi.fn>
+    highlightAll: ReturnType<typeof vi.fn>
+    languages: Record<string, unknown>
+  }
+}
+
+;(globalThis as unknown as GlobalWithPrism).Prism = {
   highlightElement: vi.fn(),
   highlightAll: vi.fn(),
   languages: {},

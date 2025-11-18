@@ -16,9 +16,9 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-[data-theme="dark"] .code-block-header,
-[data-theme="catppuccin-mocha"] .code-block-header,
-[data-theme="catppuccin-macchiato"] .code-block-header {
+[data-theme='dark'] .code-block-header,
+[data-theme='catppuccin-mocha'] .code-block-header,
+[data-theme='catppuccin-macchiato'] .code-block-header {
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -57,9 +57,9 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
-[data-theme="dark"] .code-block-btn:hover,
-[data-theme="catppuccin-mocha"] .code-block-btn:hover,
-[data-theme="catppuccin-macchiato"] .code-block-btn:hover {
+[data-theme='dark'] .code-block-btn:hover,
+[data-theme='catppuccin-mocha'] .code-block-btn:hover,
+[data-theme='catppuccin-macchiato'] .code-block-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -68,9 +68,9 @@
   background: rgba(0, 0, 0, 0.15);
 }
 
-[data-theme="dark"] .code-block-btn.active,
-[data-theme="catppuccin-mocha"] .code-block-btn.active,
-[data-theme="catppuccin-macchiato"] .code-block-btn.active {
+[data-theme='dark'] .code-block-btn.active,
+[data-theme='catppuccin-mocha'] .code-block-btn.active,
+[data-theme='catppuccin-macchiato'] .code-block-btn.active {
   background: rgba(255, 255, 255, 0.15);
 }
 

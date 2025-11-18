@@ -9,11 +9,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="../root.md">Link to root</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="folder1/nested.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="folder1/nested.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -30,11 +26,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="../../grandparent.md">Link to grandparent</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="a/b/c/file.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="a/b/c/file.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -48,11 +40,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="sibling.md">Link to sibling</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="folder/file1.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="folder/file1.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -66,11 +54,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="child/file.md">Link to child</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="root.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="root.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -84,11 +68,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="child/grandchild/file.md">Link to grandchild</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="root.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="root.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -102,11 +82,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="../root.md">Link</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="folder/nested.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="folder/nested.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -123,11 +99,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="https://example.com/file.md">External link</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="folder/file.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="folder/file.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -142,11 +114,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="#section">Anchor link</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="folder/file.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="folder/file.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -161,11 +129,7 @@ describe('MarkdownContent', () => {
       const html = '<p><a href="image.png">Image link</a></p>'
 
       const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="folder/file.md"
-          onLinkClick={onLinkClick}
-        />
+        <MarkdownContent html={html} filePath="folder/file.md" onLinkClick={onLinkClick} />
       )
 
       const link = container.querySelector('a')
@@ -178,12 +142,7 @@ describe('MarkdownContent', () => {
     it('should render links normally when onLinkClick is not provided', () => {
       const html = '<p><a href="../root.md">Link to root</a></p>'
 
-      const { container } = render(
-        <MarkdownContent
-          html={html}
-          filePath="folder1/nested.md"
-        />
-      )
+      const { container } = render(<MarkdownContent html={html} filePath="folder1/nested.md" />)
 
       const link = container.querySelector('a')
       expect(link).toBeTruthy()

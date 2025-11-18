@@ -37,10 +37,12 @@ describe('useTheme', () => {
   })
 
   it('should support all 5 themes', () => {
-    const themes: Array<'light' | 'dark' | 'catppuccin-latte' | 'catppuccin-macchiato' | 'catppuccin-mocha'> = ['light', 'dark', 'catppuccin-latte', 'catppuccin-macchiato', 'catppuccin-mocha']
+    const themes: Array<
+      'light' | 'dark' | 'catppuccin-latte' | 'catppuccin-macchiato' | 'catppuccin-mocha'
+    > = ['light', 'dark', 'catppuccin-latte', 'catppuccin-macchiato', 'catppuccin-mocha']
     const { result } = renderHook(() => useTheme())
 
-    themes.forEach(theme => {
+    themes.forEach((theme) => {
       act(() => {
         result.current.setTheme(theme)
       })

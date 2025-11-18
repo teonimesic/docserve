@@ -14,15 +14,18 @@ export function useSidebarResize() {
   const [isResizing, setIsResizing] = useState(false)
   const widthBeforeSaveRef = useRef<number>(width)
 
-  const setWidth = useCallback((newWidth: number, saveImmediately = true) => {
-    const constrainedWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth))
-    setWidthState(constrainedWidth)
-    widthBeforeSaveRef.current = constrainedWidth
+  const setWidth = useCallback(
+    (newWidth: number, saveImmediately = true) => {
+      const constrainedWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth))
+      setWidthState(constrainedWidth)
+      widthBeforeSaveRef.current = constrainedWidth
 
-    if (saveImmediately && !isResizing) {
-      localStorage.setItem('sidebarWidth', constrainedWidth.toString())
-    }
-  }, [isResizing])
+      if (saveImmediately && !isResizing) {
+        localStorage.setItem('sidebarWidth', constrainedWidth.toString())
+      }
+    },
+    [isResizing]
+  )
 
   const startResizing = useCallback(() => {
     setIsResizing(true)

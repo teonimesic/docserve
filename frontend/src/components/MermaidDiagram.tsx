@@ -18,7 +18,10 @@ export function MermaidDiagram({ chart, theme = 'default' }: MermaidDiagramProps
     if (!mermaidInitialized) {
       mermaid.initialize({
         startOnLoad: false,
-        theme: theme === 'dark' || theme.includes('mocha') || theme.includes('macchiato') ? 'dark' : 'default',
+        theme:
+          theme === 'dark' || theme.includes('mocha') || theme.includes('macchiato')
+            ? 'dark'
+            : 'default',
         securityLevel: 'loose',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
         flowchart: {
@@ -68,7 +71,9 @@ export function MermaidDiagram({ chart, theme = 'default' }: MermaidDiagramProps
         <pre className="mermaid-error-message">{error}</pre>
         <details className="mermaid-error-details">
           <summary>Show diagram source</summary>
-          <pre><code>{chart}</code></pre>
+          <pre>
+            <code>{chart}</code>
+          </pre>
         </details>
       </div>
     )

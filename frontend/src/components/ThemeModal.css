@@ -86,27 +86,27 @@
 }
 
 /* Theme-specific card styles */
-.theme-card[data-theme="light"] {
+.theme-card[data-theme='light'] {
   background: #fff;
   color: #333;
 }
 
-.theme-card[data-theme="dark"] {
+.theme-card[data-theme='dark'] {
   background: #0d1117;
   color: #e6edf3;
 }
 
-.theme-card[data-theme="catppuccin-latte"] {
+.theme-card[data-theme='catppuccin-latte'] {
   background: #eff1f5;
   color: #4c4f69;
 }
 
-.theme-card[data-theme="catppuccin-macchiato"] {
+.theme-card[data-theme='catppuccin-macchiato'] {
   background: #24273a;
   color: #cad3f5;
 }
 
-.theme-card[data-theme="catppuccin-mocha"] {
+.theme-card[data-theme='catppuccin-mocha'] {
   background: #1e1e2e;
   color: #cdd6f4;
 }

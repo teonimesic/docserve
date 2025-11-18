@@ -15,8 +15,8 @@ interface MarkdownContentProps {
 function parseStyleString(styleStr: string): Record<string, string> {
   const styleObj: Record<string, string> = {}
 
-  styleStr.split(';').forEach(rule => {
-    const [property, value] = rule.split(':').map(s => s.trim())
+  styleStr.split(';').forEach((rule) => {
+    const [property, value] = rule.split(':').map((s) => s.trim())
     if (property && value) {
       // Convert kebab-case to camelCase (e.g., background-color -> backgroundColor)
       const camelProperty = property.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
@@ -29,7 +29,12 @@ function parseStyleString(styleStr: string): Record<string, string> {
 
 // Memoized MarkdownContent - only re-renders if html, filePath, or theme change
 // This prevents unnecessary re-renders when sidebar state changes
-export const MarkdownContent = memo(function MarkdownContent({ html, filePath, theme, onLinkClick }: MarkdownContentProps) {
+export const MarkdownContent = memo(function MarkdownContent({
+  html,
+  filePath,
+  theme,
+  onLinkClick,
+}: MarkdownContentProps) {
   const parser = new DOMParser()
   const doc = parser.parseFromString(html, 'text/html')
 
@@ -52,7 +57,7 @@ export const MarkdownContent = memo(function MarkdownContent({ html, filePath, t
         if (codeElement) {
           const className = codeElement.className
           const languageMatch = className.match(/language-(\w+)/)
-          
+
           if (languageMatch) {
             const language = languageMatch[1] || 'text'
             const code = codeElement.textContent || ''
@@ -77,18 +82,13 @@ export const MarkdownContent = memo(function MarkdownContent({ html, filePath, t
 
           // Get all children except the checkbox (marked puts it as first child)
           const children = Array.from(element.childNodes)
-            .filter(child => child !== checkbox)
+            .filter((child) => child !== checkbox)
             .map((child, i) => convertNodeToReact(child, i))
-            .filter(child => child !== '' && child !== null)
+            .filter((child) => child !== '' && child !== null)
 
           return (
             <li key={key}>
-              <TodoCheckbox
-                checked={isChecked}
-                index={currentIndex}
-                filePath={filePath}
-              />
-              {' '}
+              <TodoCheckbox checked={isChecked} index={currentIndex} filePath={filePath} />{' '}
               {children}
             </li>
           )
@@ -108,7 +108,7 @@ export const MarkdownContent = memo(function MarkdownContent({ html, filePath, t
           )
 
           // Get other attributes
-          const props: Record<string, any> = { key }
+          const props: Record<string, unknown> = { key }
           for (let i = 0; i < element.attributes.length; i++) {
             const attr = element.attributes[i]
             if (attr && attr.name !== 'href') {
@@ -134,12 +134,12 @@ export const MarkdownContent = memo(function MarkdownContent({ html, filePath, t
       }
 
       // Regular elements - convert children recursively
-      const children = Array.from(element.childNodes).map((child, i) => 
+      const children = Array.from(element.childNodes).map((child, i) =>
         convertNodeToReact(child, i)
       )
 
       // Get attributes
-      const props: Record<string, any> = { key }
+      const props: Record<string, unknown> = { key }
       for (let i = 0; i < element.attributes.length; i++) {
         const attr = element.attributes[i]
         if (attr) {

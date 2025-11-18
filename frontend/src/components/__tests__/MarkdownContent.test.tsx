@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MarkdownContent } from '../MarkdownContent'
 
@@ -6,14 +6,14 @@ describe('MarkdownContent', () => {
   it('renders simple HTML content', () => {
     const html = '<p>Hello world</p>'
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     expect(screen.getByText('Hello world')).toBeInTheDocument()
   })
 
   it('renders code blocks with CodeBlock component', () => {
     const html = '<pre><code class="language-javascript">const x = 1;</code></pre>'
     const { container } = render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     // CodeBlock component should be rendered
     expect(container.querySelector('.code-block-wrapper')).toBeInTheDocument()
     expect(screen.getByText('javascript')).toBeInTheDocument()
@@ -22,13 +22,14 @@ describe('MarkdownContent', () => {
   it('renders mermaid diagrams with MermaidDiagram component', () => {
     const html = '<pre><code class="language-mermaid">graph TD; A-->B;</code></pre>'
     const { container } = render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     // MermaidDiagram component should be rendered
     expect(container.querySelector('.mermaid-wrapper')).toBeInTheDocument()
   })
 
   it('renders todo checkboxes with TodoCheckbox component', () => {
-    const html = '<ul><li><input type="checkbox" disabled="" /> Unchecked item</li><li><input type="checkbox" disabled="" checked="" /> Checked item</li></ul>'
+    const html =
+      '<ul><li><input type="checkbox" disabled="" /> Unchecked item</li><li><input type="checkbox" disabled="" checked="" /> Checked item</li></ul>'
     render(<MarkdownContent html={html} filePath="test.md" />)
 
     const checkboxes = screen.getAllByRole('checkbox')
@@ -40,7 +41,7 @@ describe('MarkdownContent', () => {
   it('renders headings', () => {
     const html = '<h1>Title</h1><h2>Subtitle</h2>'
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     expect(screen.getByRole('heading', { level: 1, name: 'Title' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Subtitle' })).toBeInTheDocument()
   })
@@ -48,15 +49,44 @@ describe('MarkdownContent', () => {
   it('renders links', () => {
     const html = '<a href="https://example.com">Link</a>'
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     const link = screen.getByRole('link', { name: 'Link' })
     expect(link).toHaveAttribute('href', 'https://example.com')
+  })
+
+  it('renders hash/anchor links without preventing default behavior', () => {
+    const html =
+      '<h2 id="section-title">Section Title</h2><p><a href="#section-title">Link to section</a></p>'
+    render(<MarkdownContent html={html} filePath="test.md" />)
+
+    const link = screen.getByRole('link', { name: 'Link to section' })
+    expect(link).toHaveAttribute('href', '#section-title')
+
+    // Hash links should not have onClick handler that prevents default
+    // They should use browser's default anchor navigation
+    // We can verify this by checking that the link doesn't call onLinkClick
+    const heading = screen.getByRole('heading', { level: 2, name: 'Section Title' })
+    expect(heading).toHaveAttribute('id', 'section-title')
+  })
+
+  it('does not intercept hash links with onLinkClick handler', () => {
+    const onLinkClick = vi.fn()
+    const html = '<a href="#section">Link to section</a>'
+    render(<MarkdownContent html={html} filePath="test.md" onLinkClick={onLinkClick} />)
+
+    const link = screen.getByRole('link', { name: 'Link to section' })
+
+    // Click the hash link
+    link.click()
+
+    // onLinkClick should NOT be called for hash links (they should use browser default)
+    expect(onLinkClick).not.toHaveBeenCalled()
   })
 
   it('converts class attribute to className', () => {
     const html = '<div class="test-class">Content</div>'
     const { container } = render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     const div = container.querySelector('.test-class')
     expect(div).toBeInTheDocument()
     expect(div?.textContent).toBe('Content')
@@ -74,7 +104,7 @@ describe('MarkdownContent', () => {
       </div>
     `
     render(<MarkdownContent html={html} filePath="test.md" />)
-    
+
     expect(screen.getByText('Paragraph 1')).toBeInTheDocument()
     expect(screen.getByText('Item 1')).toBeInTheDocument()
     expect(screen.getByText('Item 2')).toBeInTheDocument()
@@ -155,7 +185,11 @@ describe('MarkdownContent', () => {
       let renderCount = 0
 
       // Create a wrapper to track renders
-      const TestWrapper = ({ someUnrelatedProp }: { someUnrelatedProp: number }) => {
+      const TestWrapper = ({
+        someUnrelatedProp: _someUnrelatedProp,
+      }: {
+        someUnrelatedProp: number
+      }) => {
         renderCount++
         return <MarkdownContent html={html} filePath="test.md" />
       }
@@ -187,9 +221,7 @@ describe('MarkdownContent', () => {
     it('re-renders when filePath changes', () => {
       const html = '<ul><li><input type="checkbox" disabled="" /> Task</li></ul>'
 
-      const { container, rerender } = render(
-        <MarkdownContent html={html} filePath="file1.md" />
-      )
+      const { container, rerender } = render(<MarkdownContent html={html} filePath="file1.md" />)
 
       const checkbox1 = container.querySelector('input[type="checkbox"]')
       expect(checkbox1).toBeInTheDocument()

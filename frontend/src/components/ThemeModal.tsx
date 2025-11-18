@@ -79,11 +79,7 @@ export function ThemeModal({ isOpen, currentTheme, onClose, onSelectTheme }: The
               <div className="theme-card-name">{theme.name}</div>
               <div className="theme-card-preview">
                 {theme.colors.map((color, index) => (
-                  <div
-                    key={index}
-                    className="theme-color-swatch"
-                    style={{ background: color }}
-                  />
+                  <div key={index} className="theme-color-swatch" style={{ background: color }} />
                 ))}
               </div>
               <div className="theme-card-sample">{theme.description}</div>

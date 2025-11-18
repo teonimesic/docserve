@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react'
 
-export type Theme = 'light' | 'dark' | 'catppuccin-latte' | 'catppuccin-macchiato' | 'catppuccin-mocha'
+export type Theme =
+  | 'light'
+  | 'dark'
+  | 'catppuccin-latte'
+  | 'catppuccin-macchiato'
+  | 'catppuccin-mocha'
 
 const DEFAULT_THEME: Theme = 'catppuccin-mocha'
 

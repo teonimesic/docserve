@@ -2,56 +2,78 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, waitFor } from '@testing-library/react'
 import App from './App'
 
+// Type definitions for mocks
+type MockWebSocket = {
+  addEventListener: ReturnType<typeof vi.fn>
+  removeEventListener: ReturnType<typeof vi.fn>
+  close: ReturnType<typeof vi.fn>
+  send: ReturnType<typeof vi.fn>
+  readyState: number
+  onopen: ((event: Event) => void) | null
+  onmessage: ((event: MessageEvent) => void) | null
+  onerror: ((event: Event) => void) | null
+  onclose: ((event: CloseEvent) => void) | null
+}
+
+type MockFetch = (url: string) => Promise<{
+  ok: boolean
+  json: () => Promise<unknown>
+}>
+
 // Mock fetch globally
-global.fetch = vi.fn()
+global.fetch = vi.fn() as unknown as typeof fetch
 
 describe('App WebSocket handling', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
     // Mock initial /api/files response
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            files: [
-              { name: 'test1.md', path: 'test1.md', is_directory: false },
-              { name: 'test2.md', path: 'test2.md', is_directory: false }
-            ]
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                files: [
+                  { name: 'test1.md', path: 'test1.md', is_directory: false },
+                  { name: 'test2.md', path: 'test2.md', is_directory: false },
+                ],
+              }),
           })
-        })
-      }
-      if (url.startsWith('/api/files/')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Test',
-            metadata: {}
+        }
+        if (url.startsWith('/api/files/')) {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Test',
+                metadata: {},
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
   })
 
   it('should refresh file list when FileAdded message is received', async () => {
     // Mock WebSocket
-    const mockWebSocket = {
+    const mockWebSocket: MockWebSocket = {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       close: vi.fn(),
       send: vi.fn(),
       readyState: WebSocket.OPEN,
-      onopen: null as any,
-      onmessage: null as any,
-      onerror: null as any,
-      onclose: null as any,
+      onopen: null,
+      onmessage: null,
+      onerror: null,
+      onclose: null,
     }
 
-    global.WebSocket = vi.fn(function(this: any) {
+    global.WebSocket = vi.fn(function () {
       return mockWebSocket
-    }) as any
+    }) as unknown as typeof WebSocket
 
     const { container } = render(<App />)
 
@@ -64,32 +86,35 @@ describe('App WebSocket handling', () => {
     vi.clearAllMocks()
 
     // Mock updated file list with new file
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            files: [
-              { name: 'test1.md', path: 'test1.md', is_directory: false },
-              { name: 'test2.md', path: 'test2.md', is_directory: false },
-              { name: 'new-file.md', path: 'new-file.md', is_directory: false }
-            ]
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                files: [
+                  { name: 'test1.md', path: 'test1.md', is_directory: false },
+                  { name: 'test2.md', path: 'test2.md', is_directory: false },
+                  { name: 'new-file.md', path: 'new-file.md', is_directory: false },
+                ],
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
 
     // Simulate FileAdded WebSocket message
     const fileAddedMessage = {
       type: 'FileAdded',
-      name: 'new-file.md'
+      name: 'new-file.md',
     }
 
     // Trigger onmessage callback
     if (mockWebSocket.onmessage) {
       mockWebSocket.onmessage({
-        data: JSON.stringify(fileAddedMessage)
+        data: JSON.stringify(fileAddedMessage),
       } as MessageEvent)
     }
 
@@ -107,21 +132,21 @@ describe('App WebSocket handling', () => {
 
   it('should NOT refresh file list when Reload message is received', async () => {
     // Mock WebSocket
-    const mockWebSocket = {
+    const mockWebSocket: MockWebSocket = {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       close: vi.fn(),
       send: vi.fn(),
       readyState: WebSocket.OPEN,
-      onopen: null as any,
-      onmessage: null as any,
-      onerror: null as any,
-      onclose: null as any,
+      onopen: null,
+      onmessage: null,
+      onerror: null,
+      onclose: null,
     }
 
-    global.WebSocket = vi.fn(function(this: any) {
+    global.WebSocket = vi.fn(function () {
       return mockWebSocket
-    }) as any
+    }) as unknown as typeof WebSocket
 
     render(<App />)
 
@@ -135,18 +160,18 @@ describe('App WebSocket handling', () => {
 
     // Simulate Reload WebSocket message (file content change, not new file)
     const reloadMessage = {
-      type: 'Reload'
+      type: 'Reload',
     }
 
     // Trigger onmessage callback
     if (mockWebSocket.onmessage) {
       mockWebSocket.onmessage({
-        data: JSON.stringify(reloadMessage)
+        data: JSON.stringify(reloadMessage),
       } as MessageEvent)
     }
 
     // Wait a bit
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     // Verify that /api/files was NOT called (file list should not refresh)
     expect(global.fetch).not.toHaveBeenCalledWith('/api/files')
@@ -159,39 +184,41 @@ describe('App WebSocket handling', () => {
       close: vi.fn(),
       send: vi.fn(),
       readyState: WebSocket.OPEN,
-      onopen: null as any,
-      onmessage: null as any,
-      onerror: null as any,
-      onclose: null as any,
+      onopen: null,
+      onmessage: null,
+      onerror: null,
+      onclose: null,
     }
 
-    global.WebSocket = vi.fn(function(this: any) {
+    global.WebSocket = vi.fn(function () {
       return mockWebSocket
-    }) as any
+    }) as unknown as typeof WebSocket
 
     // Set up initial fetch to load test1.md as current file
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            files: [
-              { name: 'test1.md', path: 'test1.md', is_directory: false }
-            ]
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                files: [{ name: 'test1.md', path: 'test1.md', is_directory: false }],
+              }),
           })
-        })
-      }
-      if (url === '/api/files/test1.md' || url === '/api/files/renamed.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Test Content',
-            metadata: {}
+        }
+        if (url === '/api/files/test1.md' || url === '/api/files/renamed.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Test Content',
+                metadata: {},
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
 
     render(<App />)
 
@@ -203,39 +230,41 @@ describe('App WebSocket handling', () => {
     vi.clearAllMocks()
 
     // Mock updated file list
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            files: [
-              { name: 'renamed.md', path: 'renamed.md', is_directory: false }
-            ]
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                files: [{ name: 'renamed.md', path: 'renamed.md', is_directory: false }],
+              }),
           })
-        })
-      }
-      if (url === '/api/files/renamed.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Test Content',
-            metadata: {}
+        }
+        if (url === '/api/files/renamed.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Test Content',
+                metadata: {},
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
 
     // Simulate FileRenamed WebSocket message for current file
     const renamedMessage = {
       type: 'FileRenamed',
       old_name: 'test1.md',
-      new_name: 'renamed.md'
+      new_name: 'renamed.md',
     }
 
     if (mockWebSocket.onmessage) {
       mockWebSocket.onmessage({
-        data: JSON.stringify(renamedMessage)
+        data: JSON.stringify(renamedMessage),
       } as MessageEvent)
     }
 
@@ -253,40 +282,44 @@ describe('App WebSocket handling', () => {
       close: vi.fn(),
       send: vi.fn(),
       readyState: WebSocket.OPEN,
-      onopen: null as any,
-      onmessage: null as any,
-      onerror: null as any,
-      onclose: null as any,
+      onopen: null,
+      onmessage: null,
+      onerror: null,
+      onclose: null,
     }
 
-    global.WebSocket = vi.fn(function(this: any) {
+    global.WebSocket = vi.fn(function () {
       return mockWebSocket
-    }) as any
+    }) as unknown as typeof WebSocket
 
     // Set up initial fetch
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            files: [
-              { name: 'test1.md', path: 'test1.md', is_directory: false },
-              { name: 'test2.md', path: 'test2.md', is_directory: false }
-            ]
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                files: [
+                  { name: 'test1.md', path: 'test1.md', is_directory: false },
+                  { name: 'test2.md', path: 'test2.md', is_directory: false },
+                ],
+              }),
           })
-        })
-      }
-      if (url === '/api/files/test1.md' || url === '/api/files/test2.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Test',
-            metadata: {}
+        }
+        if (url === '/api/files/test1.md' || url === '/api/files/test2.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Test',
+                metadata: {},
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
 
     render(<App />)
 
@@ -297,38 +330,40 @@ describe('App WebSocket handling', () => {
     vi.clearAllMocks()
 
     // Mock updated file list with one file removed
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            files: [
-              { name: 'test2.md', path: 'test2.md', is_directory: false }
-            ]
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                files: [{ name: 'test2.md', path: 'test2.md', is_directory: false }],
+              }),
           })
-        })
-      }
-      if (url === '/api/files/test2.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Test 2',
-            metadata: {}
+        }
+        if (url === '/api/files/test2.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Test 2',
+                metadata: {},
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
 
     // Simulate FileRemoved WebSocket message for current file
     const removedMessage = {
       type: 'FileRemoved',
-      name: 'test1.md'
+      name: 'test1.md',
     }
 
     if (mockWebSocket.onmessage) {
       mockWebSocket.onmessage({
-        data: JSON.stringify(removedMessage)
+        data: JSON.stringify(removedMessage),
       } as MessageEvent)
     }
 
@@ -345,15 +380,15 @@ describe('App WebSocket handling', () => {
       close: vi.fn(),
       send: vi.fn(),
       readyState: WebSocket.OPEN,
-      onopen: null as any,
-      onmessage: null as any,
-      onerror: null as any,
-      onclose: null as any,
+      onopen: null,
+      onmessage: null,
+      onerror: null,
+      onclose: null,
     }
 
-    global.WebSocket = vi.fn(function(this: any) {
+    global.WebSocket = vi.fn(function () {
       return mockWebSocket
-    }) as any
+    }) as unknown as typeof WebSocket
 
     render(<App />)
 
@@ -366,12 +401,12 @@ describe('App WebSocket handling', () => {
     // Simulate FileRemoved for a different file (not current)
     const removedMessage = {
       type: 'FileRemoved',
-      name: 'other-file.md'
+      name: 'other-file.md',
     }
 
     if (mockWebSocket.onmessage) {
       mockWebSocket.onmessage({
-        data: JSON.stringify(removedMessage)
+        data: JSON.stringify(removedMessage),
       } as MessageEvent)
     }
 
@@ -383,56 +418,61 @@ describe('App WebSocket handling', () => {
 
   it('should handle clicks on relative markdown links', async () => {
     // Mock WebSocket
-    const mockWebSocket = {
+    const mockWebSocket: MockWebSocket = {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       close: vi.fn(),
       send: vi.fn(),
       readyState: WebSocket.OPEN,
-      onopen: null as any,
-      onmessage: null as any,
-      onerror: null as any,
-      onclose: null as any,
+      onopen: null,
+      onmessage: null,
+      onerror: null,
+      onclose: null,
     }
 
-    global.WebSocket = vi.fn(function(this: any) {
+    global.WebSocket = vi.fn(function () {
       return mockWebSocket
-    }) as any
+    }) as unknown as typeof WebSocket
 
     // Set up initial fetch to load folder1/nested.md
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            files: [
-              { name: 'root.md', path: 'root.md', is_directory: false },
-              { name: 'folder1', path: 'folder1', is_directory: true },
-              { name: 'nested.md', path: 'folder1/nested.md', is_directory: false }
-            ]
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                files: [
+                  { name: 'root.md', path: 'root.md', is_directory: false },
+                  { name: 'folder1', path: 'folder1', is_directory: true },
+                  { name: 'nested.md', path: 'folder1/nested.md', is_directory: false },
+                ],
+              }),
           })
-        })
-      }
-      if (url === '/api/files/folder1/nested.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Nested\n\n[Link to root](../root.md)',
-            metadata: {}
+        }
+        if (url === '/api/files/folder1/nested.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Nested\n\n[Link to root](../root.md)',
+                metadata: {},
+              }),
           })
-        })
-      }
-      if (url === '/api/files/root.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Root File',
-            metadata: {}
+        }
+        if (url === '/api/files/root.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Root File',
+                metadata: {},
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
 
     const { container } = render(<App />)
 
@@ -449,27 +489,31 @@ describe('App WebSocket handling', () => {
     vi.clearAllMocks()
 
     // Load the nested file
-    ;(global.fetch as any).mockImplementation((url: string) => {
-      if (url === '/api/files/folder1/nested.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Nested\n\n[Link to root](../root.md)',
-            metadata: {}
+    ;(global.fetch as unknown as ReturnType<typeof vi.fn<[], MockFetch>>).mockImplementation(
+      (url: string) => {
+        if (url === '/api/files/folder1/nested.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Nested\n\n[Link to root](../root.md)',
+                metadata: {},
+              }),
           })
-        })
-      }
-      if (url === '/api/files/root.md') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            markdown: '# Root File',
-            metadata: {}
+        }
+        if (url === '/api/files/root.md') {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                markdown: '# Root File',
+                metadata: {},
+              }),
           })
-        })
+        }
+        return Promise.reject(new Error('Unknown URL'))
       }
-      return Promise.reject(new Error('Unknown URL'))
-    })
+    )
 
     // Simulate loading the nested file by directly calling the load via fetch
     // We need to trigger the app to actually load folder1/nested.md
