@@ -288,4 +288,48 @@ describe('FileTree', () => {
     expect(getByText('child')).toBeInTheDocument()
     expect(getByText('file.md')).toBeInTheDocument()
   })
+
+  it('uses SVG icons for files and folders (not emoji)', () => {
+    const nodes: FileTreeNode[] = [
+      {
+        name: 'folder1',
+        path: 'folder1',
+        isFolder: true,
+        children: [
+          { name: 'file1.md', path: 'folder1/file1.md', isFolder: false }
+        ]
+      },
+      { name: 'file2.md', path: 'file2.md', isFolder: false }
+    ]
+
+    const { container } = render(
+      <FileTree
+        nodes={nodes}
+        currentPath=""
+        onFileSelect={() => {}}
+        isExpanded={() => true}
+        onToggleFolder={() => {}}
+      />
+    )
+
+    // Check that folder icons are SVG elements
+    const folderIcons = container.querySelectorAll('.folder-icon svg')
+    expect(folderIcons.length).toBeGreaterThan(0)
+
+    // Check that file icons are SVG elements
+    const fileIcons = container.querySelectorAll('.file-icon svg')
+    expect(fileIcons.length).toBeGreaterThan(0)
+
+    // Ensure no emoji characters in icon elements
+    const folderIconTexts = Array.from(container.querySelectorAll('.folder-icon')).map(el => el.textContent)
+    const fileIconTexts = Array.from(container.querySelectorAll('.file-icon')).map(el => el.textContent)
+
+    folderIconTexts.forEach(text => {
+      expect(text).not.toContain('📁')
+    })
+
+    fileIconTexts.forEach(text => {
+      expect(text).not.toContain('📄')
+    })
+  })
 })
