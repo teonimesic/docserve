@@ -17,15 +17,15 @@ function getBinaryName() {
   const ext = platform === 'win32' ? '.exe' : '';
 
   if (platform === 'darwin' && arch === 'x64') {
-    return `docserve-darwin-x64${ext}`;
+    return `mdocserve-darwin-x64${ext}`;
   } else if (platform === 'darwin' && arch === 'arm64') {
-    return `docserve-darwin-arm64${ext}`;
+    return `mdocserve-darwin-arm64${ext}`;
   } else if (platform === 'linux' && arch === 'x64') {
-    return `docserve-linux-x64${ext}`;
+    return `mdocserve-linux-x64${ext}`;
   } else if (platform === 'linux' && arch === 'arm64') {
-    return `docserve-linux-arm64${ext}`;
+    return `mdocserve-linux-arm64${ext}`;
   } else if (platform === 'win32' && arch === 'x64') {
-    return `docserve-windows-x64${ext}`;
+    return `mdocserve-windows-x64${ext}`;
   } else {
     throw new Error(`Unsupported platform: ${platform}-${arch}`);
   }
@@ -60,9 +60,9 @@ async function install() {
     const binaryName = getBinaryName();
     const ext = platform === 'win32' ? '.zip' : '.tar.gz';
     const archiveName = `${binaryName}${ext}`;
-    const url = `https://github.com/teonimesic/docserve/releases/download/v${version}/${archiveName}`;
+    const url = `https://github.com/teonimesic/mdocserve/releases/download/v${version}/${archiveName}`;
 
-    console.log(`Downloading docserve v${version} for ${platform}-${arch}...`);
+    console.log(`Downloading mdocserve v${version} for ${platform}-${arch}...`);
     console.log(`URL: ${url}`);
 
     const tmpDir = path.join(__dirname, '..', 'tmp');
@@ -97,7 +97,7 @@ async function install() {
       fs.chmodSync(binaryPath, 0o755);
 
       // Create symlink without extension
-      const symlinkPath = path.join(binDir, 'docserve');
+      const symlinkPath = path.join(binDir, 'mdocserve');
       if (fs.existsSync(symlinkPath)) {
         fs.unlinkSync(symlinkPath);
       }
@@ -107,12 +107,12 @@ async function install() {
     // Cleanup
     fs.rmSync(tmpDir, { recursive: true, force: true });
 
-    console.log('docserve installed successfully!');
-    console.log('Run `docserve --version` to verify installation.');
+    console.log('mdocserve installed successfully!');
+    console.log('Run `mdocserve --version` to verify installation.');
   } catch (error) {
     console.error('Installation failed:', error.message);
     console.error('\nYou can manually download the binary from:');
-    console.error(`https://github.com/teonimesic/docserve/releases/tag/v${version}`);
+    console.error(`https://github.com/teonimesic/mdocserve/releases/tag/v${version}`);
     process.exit(1);
   }
 }

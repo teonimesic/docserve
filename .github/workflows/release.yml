@@ -18,24 +18,24 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            artifact_name: docserve
-            asset_name: docserve-linux-x64
+            artifact_name: mdocserve
+            asset_name: mdocserve-linux-x64
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            artifact_name: docserve
-            asset_name: docserve-linux-arm64
+            artifact_name: mdocserve
+            asset_name: mdocserve-linux-arm64
           - os: macos-latest
             target: x86_64-apple-darwin
-            artifact_name: docserve
-            asset_name: docserve-darwin-x64
+            artifact_name: mdocserve
+            asset_name: mdocserve-darwin-x64
           - os: macos-latest
             target: aarch64-apple-darwin
-            artifact_name: docserve
-            asset_name: docserve-darwin-arm64
+            artifact_name: mdocserve
+            asset_name: mdocserve-darwin-arm64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact_name: docserve.exe
-            asset_name: docserve-windows-x64.exe
+            artifact_name: mdocserve.exe
+            asset_name: mdocserve-windows-x64.exe
 
     steps:
       - name: Checkout code
@@ -127,25 +127,25 @@ jobs:
 
             ### Using npm (recommended)
             ```bash
-            npm install -g docserve
+            npm install -g mdocserve
             ```
 
             ### Manual Installation
             Download the appropriate binary for your platform:
-            - **Linux x64**: docserve-linux-x64.tar.gz
-            - **Linux ARM64**: docserve-linux-arm64.tar.gz
-            - **macOS Intel**: docserve-darwin-x64.tar.gz
-            - **macOS Apple Silicon**: docserve-darwin-arm64.tar.gz
-            - **Windows x64**: docserve-windows-x64.exe.zip
+            - **Linux x64**: mdocserve-linux-x64.tar.gz
+            - **Linux ARM64**: mdocserve-linux-arm64.tar.gz
+            - **macOS Intel**: mdocserve-darwin-x64.tar.gz
+            - **macOS Apple Silicon**: mdocserve-darwin-arm64.tar.gz
+            - **Windows x64**: mdocserve-windows-x64.exe.zip
 
             Extract and add to your PATH.
 
             ## Usage
             ```bash
-            docserve docs/
+            mdocserve docs/
             ```
 
-            See [README](https://github.com/teonimesic/docserve#readme) for more details.
+            See [README](https://github.com/teonimesic/mdocserve#readme) for more details.
           draft: false
           prerelease: false
         env:

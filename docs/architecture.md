@@ -1,10 +1,10 @@
-# docserve Architecture
+# mdocserve Architecture
 
 > **Note**: This project is based on [mdserve](https://github.com/some-natalie/mdserve) but has evolved significantly with a complete React frontend rewrite and recursive folder support.
 
 ## Overview
 
-docserve is a modern markdown documentation server with live reload, featuring a React-based single-page application for the frontend and a Rust backend for file serving and WebSocket communication.
+mdocserve is a modern markdown documentation server with live reload, featuring a React-based single-page application for the frontend and a Rust backend for file serving and WebSocket communication.
 
 **Core Architecture**: React SPA + Rust API Server + WebSocket Live Reload
 
@@ -90,7 +90,7 @@ sequenceDiagram
 
 ### Recursive Folder Support
 
-Unlike the original mdserve (flat directories only), docserve watches directories recursively:
+Unlike the original mdserve (flat directories only), mdocserve watches directories recursively:
 
 ```rust
 notify::Config::default()
@@ -267,7 +267,7 @@ cd frontend && npm run build
 cargo build --release
 
 # Single binary contains everything
-./target/release/docserve ./docs/
+./target/release/mdocserve ./docs/
 ```
 
 The frontend is embedded in the Rust binary at compile time using `rust-embed`, resulting in a single portable executable.
@@ -288,7 +288,7 @@ The frontend is embedded in the Rust binary at compile time using `rust-embed`, 
 
 ## Differences from Original mdserve
 
-| Feature | Original mdserve | docserve |
+| Feature | Original mdserve | mdocserve |
 |---------|------------------|----------|
 | Frontend | Server-side Jinja2 templates | React SPA |
 | Markdown | Server-side (pulldown-cmark) | Client-side (marked.js) |

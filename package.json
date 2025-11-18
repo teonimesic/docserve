@@ -1,16 +1,16 @@
 {
-  "name": "docserve",
+  "name": "mdocserve",
   "version": "0.1.0",
   "description": "Fast markdown documentation server with React SPA frontend, recursive folder support, and live reload",
   "author": "Stefano Benatti <stefano@heavenstudio.com.br>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/teonimesic/docserve.git"
+    "url": "https://github.com/teonimesic/mdocserve.git"
   },
-  "homepage": "https://github.com/teonimesic/docserve#readme",
+  "homepage": "https://github.com/teonimesic/mdocserve#readme",
   "bugs": {
-    "url": "https://github.com/teonimesic/docserve/issues"
+    "url": "https://github.com/teonimesic/mdocserve/issues"
   },
   "keywords": [
     "markdown",
@@ -24,7 +24,7 @@
     "cli"
   ],
   "bin": {
-    "docserve": "./bin/docserve"
+    "mdocserve": "./bin/mdocserve"
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js"

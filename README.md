@@ -1,10 +1,10 @@
-# docserve
+# mdocserve
 
 Fast markdown documentation server with **live reload**, **recursive folder support**, and **theme switching**.
 
 > **Note**: This project is based on [mdserve](https://github.com/some-natalie/mdserve) but has evolved significantly with a complete React frontend rewrite, recursive folder watching, and enhanced UI features.
 
-Just run `docserve docs/` and start writing. One statically-compiled executable with embedded React SPA - no installation, no dependencies.
+Just run `mdocserve docs/` and start writing. One statically-compiled executable with embedded React SPA - no installation, no dependencies.
 
 ## Features
 
@@ -34,28 +34,28 @@ See [Architecture Documentation](docs/architecture.md) for detailed information.
 ### From npm (Recommended)
 
 ```bash
-npm install -g docserve
+npm install -g mdocserve
 ```
 
 ### Using Cargo
 
 ```bash
-cargo install docserve
+cargo install mdocserve
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/teonimesic/docserve.git
-cd docserve
+git clone https://github.com/teonimesic/mdocserve.git
+cd mdocserve
 cd frontend && npm install && npm run build && cd ..
 cargo build --release
-cp target/release/docserve <folder in your PATH>
+cp target/release/mdocserve <folder in your PATH>
 ```
 
 ### Manual Download
 
-Download the appropriate binary for your platform from the [latest release](https://github.com/teonimesic/docserve/releases/latest).
+Download the appropriate binary for your platform from the [latest release](https://github.com/teonimesic/mdocserve/releases/latest).
 
 ## Usage
 
@@ -63,19 +63,19 @@ Download the appropriate binary for your platform from the [latest release](http
 
 ```bash
 # Serve all markdown files in a directory (recursive)
-docserve docs/
+mdocserve docs/
 
 # Serve on custom port
-docserve docs/ --port 8080
-docserve docs/ -p 8080
+mdocserve docs/ --port 8080
+mdocserve docs/ -p 8080
 
 # Serve on custom hostname and port
-docserve docs/ --hostname 0.0.0.0 --port 8080
+mdocserve docs/ --hostname 0.0.0.0 --port 8080
 ```
 
 ### Directory Mode
 
-When you pass a directory path, docserve automatically:
+When you pass a directory path, mdocserve automatically:
 - Scans and serves all `.md` and `.markdown` files **recursively** in subdirectories
 - Displays an interactive navigation sidebar with collapsible folders
 - Watches for file changes, additions, and deletions in real-time
@@ -129,7 +129,7 @@ cd ..
 cargo build --release
 
 # Run the binary
-./target/release/docserve test_folders/
+./target/release/mdocserve test_folders/
 ```
 
 ### Running Tests
@@ -172,7 +172,7 @@ npm run test:e2e
 
 ## Differences from Original mdserve
 
-| Feature | Original mdserve | docserve |
+| Feature | Original mdserve | mdocserve |
 |---------|------------------|----------|
 | Frontend | Server-side Jinja2 templates | React SPA |
 | Markdown Rendering | Server-side (pulldown-cmark) | Client-side (marked.js) |

@@ -1,14 +1,14 @@
 [package]
-name = "docserve"
+name = "mdocserve"
 version = "0.1.0"
 authors = ["Stefano Benatti <stefano@heavenstudio.com.br>"]
 edition = "2021"
 rust-version = "1.82.0"
 license = "MIT"
 description = "Fast markdown documentation server with React SPA frontend, recursive folder support, and live reload"
-repository = "https://github.com/teonimesic/docserve"
-homepage = "https://github.com/teonimesic/docserve"
-documentation = "https://github.com/teonimesic/docserve#readme"
+repository = "https://github.com/teonimesic/mdocserve"
+homepage = "https://github.com/teonimesic/mdocserve"
+documentation = "https://github.com/teonimesic/mdocserve#readme"
 
 [dependencies]
 axum = { version = "0.7.9", features = ["ws"] }
