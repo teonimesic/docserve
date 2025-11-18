@@ -1,0 +1,56 @@
+name: Auto Version Bump
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  version-bump:
+    # Skip if the commit message contains version bump indicators
+    if: "!contains(github.event.head_commit.message, 'Bump version') && !contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: bump
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+
+          # Bump patch version
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          # Update package.json
+          npm version $NEW_VERSION --no-git-tag-version
+
+          # Update Cargo.toml
+          sed -i "s/^version = \".*\"/version = \"$NEW_VERSION\"/" Cargo.toml
+
+      - name: Commit and tag
+        run: |
+          git add package.json Cargo.toml
+          git commit -m "Bump version to ${{ steps.bump.outputs.version }} [skip ci]"
+          git tag "v${{ steps.bump.outputs.version }}"
+          git push origin main --tags
