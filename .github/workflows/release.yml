@@ -237,7 +237,7 @@ jobs:
       with:
         tag: v${{ needs.version-bump.outputs.version }}
         artifacts: artifacts/*.tar.gz
-        draft: true
+        draft: false
         allowUpdates: true
         updateOnlyUnreleased: true
         token: ${{ secrets.GITHUB_TOKEN }}
